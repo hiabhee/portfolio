@@ -93,7 +93,7 @@ function snapWithGuides(el, dx, dy) {
   return { dx, dy };
 }
 
-// ── drag whole pieces ──
+// ── drag whole pieces: 1:1 tracking + velocity settle (critically damped, no bounce) ──
 function makeDraggable(el, { persistKey } = {}) {
   el.addEventListener('pointerdown', (e) => {
     if (e.button === 1) return;
@@ -108,7 +108,9 @@ function makeDraggable(el, { persistKey } = {}) {
     const start = { x: e.clientX, y: e.clientY };
     let px = e.clientX, py = e.clientY;
     const rot = el.dataset.rot || 0;
-    const k = reduceMotion ? 1 : GLIDE;
+    const k = reduceMotion ? 1 : 1; // direct manipulation: stay glued to pointer
+    // velocity history for release handoff
+    const trail = [{ x: px, y: py, t: performance.now() }];
     let raf = 0, done = false;
     el.style.zIndex = ++zTop;
     el.classList.add('dragging', 'selected');
@@ -129,16 +131,51 @@ function makeDraggable(el, { persistKey } = {}) {
     };
     const up = () => {
       done = true; cancelAnimationFrame(raf);
-      const s = snapWithGuides(el, origin.x + (px - start.x) - rendered.x, origin.y + (py - start.y) - rendered.y);
-      const fin = { x: rendered.x + s.dx, y: rendered.y + s.dy };
-      paint(fin);
-      el.classList.remove('dragging'); hideGuides();
+      // velocity handoff: project a short distance, then settle without overshoot
+      let vx = 0, vy = 0;
+      if (!reduceMotion && trail.length > 1) {
+        const a = trail[0], b = trail[trail.length - 1];
+        const dt = Math.max(16, b.t - a.t) / 1000;
+        vx = (b.x - a.x) / dt; vy = (b.y - a.y) / dt;
+        const clamp = (v) => Math.max(-800, Math.min(800, v));
+        vx = clamp(vx); vy = clamp(vy);
+      }
+      const proj = 0.05; // 50ms projection — subtle, stays close
+      const raw = { x: origin.x + (px - start.x), y: origin.y + (py - start.y) };
+      const fin = {
+        x: Math.max(raw.x - 24, Math.min(raw.x + 24, raw.x + vx * proj)),
+        y: Math.max(raw.y - 24, Math.min(raw.y + 24, raw.y + vy * proj)),
+      };
+      const s = snapWithGuides(el, fin.x - rendered.x, fin.y - rendered.y);
+      fin.x = rendered.x + s.dx; fin.y = rendered.y + s.dy;
+      if (reduceMotion) {
+        paint(fin);
+        el.classList.remove('dragging'); hideGuides();
+      } else {
+        // critically-damped settle: 160ms ease-out from live position
+        const from = { ...rendered };
+        const t0 = performance.now(), dur = 160;
+        const settle = (t) => {
+          const p = Math.min(1, (t - t0) / dur);
+          const ez = 1 - Math.pow(1 - p, 3);
+          paint({ x: from.x + (fin.x - from.x) * ez, y: from.y + (fin.y - from.y) * ez });
+          if (p < 1) requestAnimationFrame(settle);
+          else { el.classList.remove('dragging'); hideGuides(); }
+        };
+        el.classList.remove('dragging');
+        requestAnimationFrame(settle);
+      }
       setTimeout(() => el.classList.remove('selected'), 1200);
-      if (persistKey) save(persistKey, fin.x, fin.y);
+      if (persistKey) save(persistKey, Math.round(fin.x), Math.round(fin.y));
     };
     el.addEventListener('pointerup', up, { once: true });
     el.addEventListener('pointercancel', up, { once: true });
-    el.addEventListener('pointermove', (ev) => { px = ev.clientX; py = ev.clientY; });
+    el.addEventListener('pointermove', (ev) => {
+      px = ev.clientX; py = ev.clientY;
+      const now = performance.now();
+      trail.push({ x: px, y: py, t: now });
+      if (trail.length > 6) trail.shift();
+    });
     raf = requestAnimationFrame(frame);
   });
 
