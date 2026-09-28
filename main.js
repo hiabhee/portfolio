@@ -194,3 +194,71 @@ const io = new IntersectionObserver((es) => es.forEach((e) => {
 document.querySelectorAll('.reveal').forEach((el) => {
   if (reduceMotion) el.classList.add('in'); else io.observe(el);
 });
+
+// ── mumbai clock in the header ──
+(() => {
+  const el = document.getElementById('clock');
+  if (!el) return;
+  const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: false });
+  const tick = () => { el.textContent = `◐ MUM ${fmt.format(new Date())}`; };
+  tick();
+  setInterval(tick, 20000);
+})();
+
+// ── new-year countdown: days left, rolled yearly ──
+(() => {
+  const el = document.getElementById('nycount');
+  if (!el) return;
+  const now = new Date();
+  const target = new Date(now.getFullYear() + 1, 0, 1);
+  const days = Math.max(0, Math.ceil((target - now) / 86400000));
+  el.textContent = days === 0 ? 'happy new year!' : `${days} days → ${target.getFullYear()}`;
+})();
+
+// ── github activity: live heatmap, graceful fallback ──
+(() => {
+  const weeksEl = document.getElementById('calWeeks');
+  const monthsEl = document.getElementById('calMonths');
+  const totalEl = document.getElementById('calTotal');
+  if (!weeksEl || !monthsEl || !totalEl) return;
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const fmt = (iso) => {
+    const d = new Date(iso + 'T12:00:00');
+    return `${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  };
+  fetch('https://github-contributions-api.jogruber.de/v4/hiabhee?y=last')
+    .then((r) => { if (!r.ok) throw new Error('gh api'); return r.json(); })
+    .then((data) => {
+      const days = data.contributions;
+      if (!days || !days.length) throw new Error('empty');
+      // pad so the first column starts on Sunday
+      const lead = new Date(days[0].date + 'T12:00:00').getDay();
+      for (let i = 0; i < lead; i++) {
+        const pad = document.createElement('i');
+        pad.className = 'pad'; pad.setAttribute('aria-hidden', 'true');
+        weeksEl.appendChild(pad);
+      }
+      let total = 0, lastMonth = -1;
+      days.forEach((d, idx) => {
+        total += d.count;
+        const cell = document.createElement('i');
+        if (d.level > 0) cell.className = 'l' + d.level;
+        cell.title = `${d.count} contribution${d.count === 1 ? '' : 's'} on ${fmt(d.date)}`;
+        weeksEl.appendChild(cell);
+        // month label at the first column where a new month appears
+        const col = Math.floor((idx + lead) / 7);
+        const m = new Date(d.date + 'T12:00:00').getMonth();
+        if (m !== lastMonth && (idx + lead) % 7 === 0) {
+          lastMonth = m;
+          const lab = document.createElement('span');
+          lab.textContent = MONTHS[m];
+          lab.style.left = (col * 14) + 'px';
+          monthsEl.appendChild(lab);
+        }
+      });
+      totalEl.textContent = `${total.toLocaleString('en-US')} contributions · ${fmt(days[0].date)} – ${fmt(days[days.length - 1].date)}`;
+    })
+    .catch(() => {
+      totalEl.innerHTML = 'live graph is shy today — <a class="linkbtn" href="https://github.com/hiabhee" target="_blank" rel="noopener">see it on GitHub ↗</a>';
+    });
+})();
