@@ -41,7 +41,8 @@ a{color:inherit;text-decoration:none}
 .hire:hover{background:#000}.hire:active{transform:scale(.96)}
 
 /* ── flow: 3 scales + breathing ── */
-.flow{max-width:1060px;margin:0 auto;padding:40px 24px 120px;display:flex;flex-direction:column;gap:88px;align-items:center}
+.flow{max-width:1060px;margin:0 auto;padding:40px 24px 120px;display:flex;flex-direction:column;gap:88px;align-items:center;position:relative;z-index:2}
+
 .flow>section.piece{width:min(var(--w,600px),100%)}
 .cluster{display:flex;gap:40px;justify-content:center;align-items:flex-start;flex-wrap:wrap;width:100%}
 .cluster.wide{gap:32px}
@@ -53,12 +54,6 @@ a{color:inherit;text-decoration:none}
 /* ── HERO: full-viewport attention grabber, name first ── */
 .hero{min-height:92vh;min-height:92svh;width:100%;max-width:900px;display:flex;flex-direction:column;
   align-items:center;justify-content:center;text-align:center;padding:110px 16px 70px;position:relative;cursor:default}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font:500 12px var(--mono);
-  letter-spacing:.22em;text-transform:uppercase;color:var(--gray);
-  border:1px solid #e3ded2;background:rgba(255,253,248,.8);padding:8px 16px;border-radius:980px}
-.hero-eyebrow .pulse{width:8px;height:8px;border-radius:50%;background:var(--green);
-  box-shadow:0 0 0 4px rgba(31,157,85,.18);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.35)}}
 .hero-name{margin:22px 0 6px;font-weight:800;letter-spacing:-.05em;line-height:.92;
   font-size:clamp(60px,11vw,132px);color:var(--ink);font-optical-sizing:auto}
 .hero-line{display:block}
@@ -76,10 +71,6 @@ a{color:inherit;text-decoration:none}
 .hero-meta{margin-top:12px;font:500 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#a0a0a6}
 .hero-ctas{justify-content:center;margin-top:26px}
 .hero-ctas .pillbtn{padding:13px 30px;font-size:15px}
-/* salt: one line of code, lives with the hire action */
-.code-line{margin-top:14px;font:500 12.5px var(--mono);color:#a0a0a6}
-.code-line .k{color:var(--blue)}
-.code-line .s{color:var(--green)}
 /* countdown pill: fixed bottom-left corner, follows the scroll */
 .ny-float{position:fixed;left:18px;bottom:18px;z-index:100;display:inline-flex;align-items:center;gap:8px;
   font:600 11.5px var(--mono);letter-spacing:.08em;color:var(--ink);white-space:nowrap;
@@ -87,19 +78,122 @@ a{color:inherit;text-decoration:none}
   -webkit-backdrop-filter:blur(14px);padding:8px 16px;border-radius:980px;
   box-shadow:0 12px 30px -14px rgba(0,0,0,.4)}
 .ny-float .cdot{width:7px;height:7px;border-radius:50%;background:var(--red);flex:none}
-/* ── hero orbit: tiny code chips floating around the name ── */
-.orbit{position:absolute;inset:0;pointer-events:none}
-.ochip{position:absolute;font:600 11px var(--mono);padding:6px 12px;border-radius:980px;white-space:nowrap}
-.o1{top:17%;left:5%;background:#0D1117;color:#7ee787;transform:rotate(-6deg)}
-.o2{top:13%;right:7%;background:#fff;border:1px solid #e8e2d3;color:var(--blue);
-  transform:rotate(4deg);box-shadow:0 10px 24px -12px rgba(0,0,0,.35)}
-.o3{bottom:19%;left:9%;background:var(--ink);color:#fff;transform:rotate(3deg)}
+/* ── hero orbit retired (face sticker took its corner) ── */
+/* ── 3D dojo buddies: tiny procedural three.js characters, 2D art stays as fallback ── */
+canvas.gl3d[hidden]{display:none!important}
+.hero>*{position:relative;z-index:1}
+/* ── face sticker: floating portrait, cursor gestures via JS tilt ── */
+.face-sticker{position:absolute;right:1%;top:46%;width:min(210px,22vw);height:auto;margin:0;z-index:0;
+  perspective:700px;cursor:pointer;touch-action:manipulation;
+  translate:0 -50%;rotate:7deg;animation:facefloat 5.2s ease-in-out infinite}
+.face-tilt{display:block;width:100%;height:auto;user-select:none;-webkit-user-select:none;
+  will-change:transform;filter:drop-shadow(0 18px 24px rgba(23,23,25,.35))}
+.face-tilt.wiggle{animation:facewiggle .6s ease}
+.face-tilt.squash{animation:facesquash .18s ease}
+@keyframes facefloat{0%,100%{translate:0 -50%;rotate:7deg}50%{translate:0 calc(-50% - 14px);rotate:4deg}}
+@keyframes facewiggle{0%{transform:rotate(0) scale(1)}25%{transform:rotate(-9deg) scale(1.08)}
+  55%{transform:rotate(7deg) scale(1.05)}80%{transform:rotate(-4deg) scale(1.02)}100%{transform:rotate(0) scale(1)}}
+@keyframes facesquash{0%{transform:scale(1.1,.86)}100%{transform:scale(1,1)}}
+.gl-portrait{width:100%;height:auto;aspect-ratio:22/18;display:block;pointer-events:none}
+#portraitWrap.webgl-on svg{display:none}
+.chead{display:flex;align-items:flex-end;gap:12px}
+.chead-t{flex:1;min-width:0}
+.gl-buddy{width:76px;height:88px;flex:none;cursor:pointer}
 /* hero + paper word-reveal share the same motion */
 .hero .w{display:inline-block;will-change:opacity,translate,filter}
 .js .hero .w{opacity:0;translate:0 .35em;filter:blur(6px);
   transition:opacity .5s ease,translate .7s cubic-bezier(.22,.61,.36,1),filter .7s cubic-bezier(.22,.61,.36,1);
   transition-delay:calc(var(--i,0)*70ms)}
-.js .hero.in .w{opacity:1;translate:0 0;filter:blur(0)}
+.js body.is-ready .hero .w,.js .hero.in .w{opacity:1;translate:0 0;filter:blur(0)}
+/* hero chrome rises in after the name — hero never waits for scroll */
+.js .hero-tag,.js .hero-meta,.js .hero-ctas,.js .napkin{
+  opacity:0;translate:0 14px;transition:opacity .6s ease,translate .7s var(--ease-out)}
+.js .face-sticker{opacity:0;scale:.9;transition:opacity .7s ease,scale .8s var(--ease-out)}
+.js body.is-ready .napkin{opacity:1;translate:0 0;transition-delay:.2s}
+.js body.is-ready .hero-tag{opacity:1;translate:0 0;transition-delay:.3s}
+.js body.is-ready .hero-meta{opacity:1;translate:0 0;transition-delay:.4s}
+.js body.is-ready .hero-ctas{opacity:1;translate:0 0;transition-delay:.5s}
+.js body.is-ready .face-sticker{opacity:1;scale:1;transition-delay:.55s}
+@media(max-width:900px){
+  .face-sticker{position:relative;right:auto;top:auto;width:150px;margin:8px auto 0;
+    translate:0 0;rotate:-4deg;animation-name:facefloat-m}
+}
+@keyframes facefloat-m{0%,100%{translate:0 0;rotate:-4deg}50%{translate:0 -10px;rotate:-2deg}}
+
+/* ── sticker orbit interlude: static grid by default, pinned ferris wheel when live ── */
+.orbit-sec{width:100%}
+.orbit-stage{max-width:1060px;margin:0 auto;padding:20px 24px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.orbit-kicker{width:min(640px,100%)}
+.orbit-ring{display:flex;flex-wrap:wrap;gap:18px;justify-content:center}
+.orbit-card{position:relative;width:clamp(120px,17vw,220px);margin:0;padding:0;
+  background:none;border:0;box-shadow:none}
+.orbit-card:nth-child(odd){transform:rotate(-3deg)}
+.orbit-card:nth-child(even){transform:rotate(3deg)}
+.orbit-card img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:contain;border-radius:6px;
+  filter:drop-shadow(0 14px 18px rgba(23,23,25,.28))}
+.orbit-count{font:600 11px var(--mono);letter-spacing:.14em;color:#a0a0a6}
+.orbit-hint{font:400 12px var(--mono);color:#8e8e93;text-align:center}
+/* live mode: tall scroll track pins the stage, the strip glides left → right via JS */
+.orbit-live .orbit-tall{position:relative;height:320vh}
+.orbit-live .orbit-stage{position:sticky;top:0;height:100vh;height:100svh;max-width:none;
+  padding:0;overflow:hidden;display:block}
+.orbit-live .orbit-kicker{position:absolute;top:11vh;left:50%;transform:translateX(-50%);margin:0;z-index:5;white-space:nowrap}
+.orbit-live .orbit-ring{position:absolute;left:clamp(20px,5vw,64px);top:50%;display:flex;flex-wrap:nowrap;
+  gap:0;padding:0;width:max-content;will-change:transform}
+.orbit-live .orbit-card{margin-right:clamp(30px,4vw,72px)}
+/* staggered wave straight from the sketch: odd high, even low */
+.orbit-live .orbit-card:nth-child(odd){transform:translateY(-46px) rotate(-3deg)}
+.orbit-live .orbit-card:nth-child(even){transform:translateY(46px) rotate(3deg)}
+.orbit-live .orbit-count{position:absolute;bottom:11vh;left:50%;transform:translateX(-50%);margin:0}
+.orbit-live .orbit-hint{position:absolute;bottom:7vh;left:50%;transform:translateX(-50%);margin:0;white-space:nowrap}
+/* soft stage edges: stickers dissolve in/out instead of slicing at the screen edge */
+.orbit-live .orbit-stage::before,.orbit-live .orbit-stage::after{content:"";position:absolute;
+  top:0;bottom:0;z-index:6;pointer-events:none}
+.orbit-live .orbit-stage::before{left:0;width:clamp(140px,18vw,260px);
+  background:linear-gradient(to right,var(--canvas) 0,var(--canvas) 76px,transparent)}
+.orbit-live .orbit-stage::after{right:0;width:16vw;max-width:190px;
+  background:linear-gradient(to left,var(--canvas) 8%,transparent)}
+@media(max-width:640px){
+  .orbit-live .orbit-kicker{top:12vh;width:86vw}
+}
+
+/* ── hero napkin: framed face left, handwritten story right ── */
+.napkin{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:clamp(20px,4vw,42px);
+  width:min(780px,100%);padding:clamp(22px,4vw,38px) clamp(22px,4vw,40px);
+  background-color:var(--paper);
+  background-image:radial-gradient(rgba(23,23,25,.055) 1px,transparent 1.4px);
+  background-size:9px 9px;
+  border:var(--border-soft);border-radius:10px;box-shadow:var(--shadow-md);
+  transform:rotate(-.8deg)}
+.napkin>.tape{top:-13px}
+.napkin-foot{flex:1 1 100%;display:flex;flex-direction:column;align-items:center;gap:10px;
+  border-top:2px dashed #d5cfbf;padding-top:18px;text-align:center}
+.napkin-foot .hero-tag{margin-top:0;font-size:clamp(17px,2.6vw,21px)}
+.napkin-foot .hero-meta{margin-top:0}
+.napkin-foot .hero-ctas{margin-top:6px}
+.napkin-frame{position:relative;flex:none;width:min(300px,60vw);padding:16px}
+.napkin-frame .face-sticker{position:relative;right:auto;top:auto;width:100%;margin:0;
+  translate:0 0;rotate:0deg;animation-name:facefloat-in}
+@keyframes facefloat-in{0%,100%{translate:0 0;rotate:-1.5deg}50%{translate:0 -9px;rotate:1deg}}
+.napkin-text{flex:1;min-width:0;text-align:left}
+.hand-line{font-family:var(--hand);font-weight:700;color:var(--ink);
+  font-size:clamp(48px,7.5vw,80px);line-height:.92;margin:0;position:relative;min-height:.9em}
+.hand-line.role{margin-top:6px}
+.hand-line.tag{font-size:clamp(22px,3.4vw,30px);font-weight:600;color:#3a3a3e;margin-top:10px}
+.hand-line.typing .ht::after{content:"";display:inline-block;width:.09em;height:.92em;
+  background:var(--ink);margin-left:.07em;vertical-align:-.1em;border-radius:2px;
+  animation:caretblink .7s steps(2) infinite}
+@keyframes caretblink{50%{opacity:0}}
+.hand-under{position:absolute;left:-2%;bottom:-.18em;width:104%;height:.32em;overflow:visible;pointer-events:none}
+.hand-under path{fill:none;stroke:var(--red);stroke-width:5;stroke-linecap:round;
+  stroke-dasharray:1;stroke-dashoffset:1}
+.hand-line.written .hand-under path{stroke-dashoffset:0;transition:stroke-dashoffset .7s ease .15s}
+@media(max-width:640px){
+  .napkin{flex-direction:column;text-align:center;transform:rotate(-.5deg)}
+  .napkin-frame{width:252px}
+  .napkin-text{text-align:center}
+  .hand-under{left:2%;width:96%}
+}
 .about-sub{margin-top:10px!important}
 
 /* ── skills groups ── */
@@ -268,7 +362,7 @@ ul.tight li small{display:block;font:400 12px var(--mono);color:#a0a0a6;margin-t
 .obj-tag{position:absolute;top:-11px;left:10px;font:500 10px var(--mono);background:var(--ink);color:#fff;padding:3px 9px;border-radius:6px;letter-spacing:.03em;pointer-events:none}
 
 /* scribbles — 2 intentional annotations, restrained */
-.scribble{position:absolute;top:-58px;right:-20px;z-index:5;pointer-events:none;font-family:var(--hand);font-size:20px;color:var(--red);white-space:nowrap;transform:rotate(3deg);opacity:.92}
+.scribble{position:absolute;top:-58px;right:-20px;z-index:5;pointer-events:none;font-family:var(--hand);font-size:20px;color:var(--ink);white-space:nowrap;transform:rotate(3deg);opacity:.92}
 .scribble .arr{position:absolute;top:24px;left:6px;width:56px;height:42px;overflow:visible}
 .scribble.left{right:auto;left:-24px;transform:rotate(-6deg)}
 .scribble.left .arr{left:auto;right:6px;transform:scaleX(-1) rotate(10deg)}
@@ -321,27 +415,46 @@ ul.tight li small{display:block;font:400 12px var(--mono);color:#a0a0a6;margin-t
 .hint.gone{opacity:0}
 .toast{position:fixed;left:50%;bottom:64px;transform:translate(-50%,16px);z-index:200;font-size:13px;font-weight:500;background:#111;color:#fff;padding:11px 22px;border-radius:980px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-.rail{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:100;
-  display:flex;flex-direction:column;gap:2px;padding:12px 14px 12px 16px;
-  background:rgba(255,253,248,.92);backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,0,0,.08);border-radius:14px;
+.rail{position:fixed;right:18px;top:50%;transform:translateY(-50%) rotate(.6deg);z-index:100;
+  display:flex;flex-direction:column;gap:0;padding:10px 10px 10px 12px;
+  background:rgba(255,253,248,.94);backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,0,0,.1);border-radius:16px;
   box-shadow:0 14px 34px -18px rgba(0,0,0,.35)}
-.rail-title{font:600 9.5px var(--mono);letter-spacing:.24em;color:#a0a0a6;padding:0 2px 8px}
+.rail-title{font:600 9.5px var(--mono);letter-spacing:.24em;color:#a0a0a6;
+  padding:2px 4px 8px;display:flex;align-items:center;gap:8px}
+.rail-title::after{content:"";flex:1;border-top:2px dashed #d5cfbf}
 .rail a{display:flex;align-items:center;gap:9px;flex-direction:row-reverse;
-  padding:6px 4px;border-radius:8px}
-.rail .rn{font:500 10px var(--mono);color:#c4bcab;min-width:18px}
-.rail i{width:9px;height:9px;border-radius:50%;border:2px solid #c4bcab;
-  transition:transform .25s ease-out,background-color .25s ease-out,border-color .25s ease-out;flex:none}
-.rail span:last-child{font:500 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#a0a0a6}
-.rail a.active .rn{color:var(--blue)}
-.rail a.active i{background:var(--blue);border-color:var(--blue);transform:scale(1.35)}
-.rail a.active span:last-child{color:var(--ink);font-weight:700}
-@media(hover:hover){.rail a:hover{background:#f3efe4}}
+  padding:8px;border-radius:10px;border-top:1px dashed #e3ded2;
+  transition:background-color .2s var(--ease-out),translate .2s var(--ease-out)}
+.rail a:first-of-type{border-top:0}
+.rail .rn{font:500 10px var(--mono);color:#c4bcab;min-width:18px;transition:color .2s}
+.rail i{width:9px;height:9px;border-radius:50%;border:2px solid #c4bcab;flex:none;
+  transition:background-color .2s,border-color .2s,scale .25s var(--ease-out)}
+.rail span:last-child{font:500 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#a0a0a6;transition:color .2s}
+/* active stop gets punched: black stamp row + spinning red star */
+.rail a.active{background:var(--ink);translate:-6px 0;box-shadow:0 10px 22px -12px rgba(0,0,0,.6)}
+.rail a.active .rn{color:#ff8a7a}
+.rail a.active i{background:var(--red);border-color:var(--red);scale:1.5;border-radius:0;
+  clip-path:polygon(50% 0%,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0% 50%,38% 38%);
+  animation:starpin 7s linear infinite;box-shadow:0 0 10px rgba(232,73,29,.8)}
+.rail a.active span:last-child{color:#fff;font-weight:700}
+@keyframes starpin{to{rotate:1turn}}
+@media(hover:hover){.rail a:not(.active):hover{background:#f3efe4}
+.rail a:not(.active):hover i{border-color:var(--blue);scale:1.25}}
 
-/* scroll reveal — engineered easing, no bounce */
-.reveal{opacity:1;translate:0 0}
-.js .reveal{opacity:0;translate:0 18px;transition:opacity .55s ease,translate .6s var(--ease-out)}
-.js .reveal.in{opacity:1;translate:0 0}
+/* scroll reveal — hidden below the fold, rises in only when scrolled to */
+.reveal{opacity:1;translate:0 0;visibility:visible}
+.js .reveal{opacity:0;translate:0 36px;visibility:hidden;will-change:opacity,translate;
+  transition:opacity .7s ease,translate .8s var(--ease-out),visibility 0s linear .8s}
+.js .reveal.in{opacity:1;translate:0 0;visibility:visible;transition:opacity .7s ease,translate .8s var(--ease-out),visibility 0s}
+/* stagger siblings so clusters don't pop in as one block */
+.js .cluster .reveal:nth-child(2){transition-delay:.1s}
+.js .cluster .reveal:nth-child(3){transition-delay:.18s}
+/* papercut dividers wipe in via their line */
+.js .cut{translate:0 10px}
+.js .cut.in{translate:0 0}
+.js .cut .cut-line{transform:scaleX(0);transform-origin:left center;transition:transform .8s var(--ease-out) .1s}
+.js .cut.in .cut-line{transform:scaleX(1)}
 
 body::after{content:"";position:fixed;inset:0;z-index:2000;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
@@ -359,16 +472,21 @@ body::after{content:"";position:fixed;inset:0;z-index:2000;pointer-events:none;o
   .hero-name{font-size:clamp(56px,17vw,84px)}
   .swap-surname{-webkit-text-stroke-width:1.8px}
   .hero-tag{font-size:18px}
-  .orbit{display:none}
+  .face-sticker{width:150px}
   .paper{padding:28px 22px 32px}.paper h1{font-size:clamp(30px,10vw,40px)}
   .brand em,.zoom-deco{display:none}.hint,.ny-float{display:none}
   .scribble.left{left:8px;top:-50px}
   .rail{left:50%;right:auto;top:auto;bottom:max(10px,env(safe-area-inset-bottom));transform:translateX(-50%);
     flex-direction:row;gap:3px;padding:6px;background:rgba(23,23,25,.9);backdrop-filter:blur(14px);
     -webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);border-radius:980px}
-  .rail a{min-height:42px;padding:0 12px;flex-direction:row;border-radius:980px;color:#b9b9be}
+  .rail a{min-height:42px;padding:0 12px;flex-direction:row;border-radius:980px;border-top:0;color:#b9b9be}
   .rail-title,.rail .rn{display:none}
   .rail span:last-child{display:block;font-size:9px;color:inherit}
   .rail i{width:7px;height:7px;border-color:currentColor}
-  .rail a.active{background:var(--blue);color:#fff}.rail a.active span:last-child{color:#fff}
+  .rail a.active{background:var(--blue);color:#fff;translate:0 -3px}
+  .rail a.active .rn{display:none}
+  .rail a.active i{background:#fff;border-color:#fff;border-radius:0;scale:1.4;
+    clip-path:polygon(50% 0%,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0% 50%,38% 38%);
+    animation:starpin 7s linear infinite;box-shadow:none}
+  .rail a.active span:last-child{color:#fff}
 }

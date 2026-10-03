@@ -208,6 +208,34 @@ function toastMsg(msg) {
 function hideHint() { hint.classList.add('gone'); }
 setTimeout(hideHint, 9000);
 
+// ── sticker strip: vertical scroll glides the wave left → right, one full loop ──
+// loop is exact by construction: 3 identical sets ⇒ one set = 1/3 of track width,
+// so travel is expressed in % of the track itself — zero pixel measuring, nothing to drift.
+(() => {
+  const tall = document.getElementById('orbitTall');
+  const track = document.getElementById('orbitRing');
+  const count = document.getElementById('orbitCount');
+  if (!tall || !track || reduceMotion) return; // static grid fallback
+  if (!track.querySelectorAll('.orbit-card').length) return;
+  document.querySelector('.orbit-sec')?.classList.add('orbit-live');
+  track.innerHTML += track.innerHTML + track.innerHTML; // 3 identical sets: seamless loop
+  let ticking = false, logged = false;
+  const frame = () => {
+    ticking = false;
+    const top = tall.getBoundingClientRect().top;
+    const travel = tall.offsetHeight - innerHeight;
+    const p = travel > 0 ? Math.min(1, Math.max(0, -top / travel)) : 1;
+    track.style.transform = `translate3d(${(((p - 1) / 3) * 100).toFixed(3)}%,-50%,0)`;
+    if (count) count.textContent = `${Math.round(p * 100)}%`;
+    if (!logged) { logged = true; console.info(`[orbit] strip live — cards:${track.children.length}`); }
+  };
+  const kick = () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } };
+  addEventListener('scroll', kick, { passive: true });
+  addEventListener('resize', kick);
+  addEventListener('load', kick);
+  kick();
+})();
+
 // ── rail spy ──
 const railLinks = [...document.querySelectorAll('.rail a')];
 function railSpy() {
@@ -224,13 +252,78 @@ function railSpy() {
 addEventListener('scroll', () => requestAnimationFrame(railSpy), { passive: true });
 railSpy();
 
-// ── gentle section entrances drive the word reveals ──
-const io = new IntersectionObserver((es) => es.forEach((e) => {
-  if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-}), { threshold: 0.12 });
-document.querySelectorAll('.reveal').forEach((el) => {
-  if (reduceMotion) el.classList.add('in'); else io.observe(el);
-});
+// ── scroll reveals: sections rise in as they enter the viewport ──
+(() => {
+  if (reduceMotion) {
+    document.querySelectorAll('.reveal').forEach((el) => el.classList.add('in'));
+    document.body.classList.add('is-ready');
+    return;
+  }
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }), { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+})();
+
+// ── hero loads immediately, everything else waits for scroll ──
+requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('is-ready')));
+
+// ── face sticker gestures: leans toward your cursor, squashes on poke, wiggles on click ──
+(() => {
+  const wrap = document.getElementById('faceSticker');
+  const img = document.getElementById('faceTilt');
+  if (!wrap || !img || reduceMotion) return;
+  let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0, hovering = false;
+  const loop = () => {
+    cx += (tx - cx) * 0.14; cy += (ty - cy) * 0.14;
+    img.style.transform =
+      `rotateY(${(cx * 14).toFixed(2)}deg) rotateX(${(-cy * 12).toFixed(2)}deg) scale(${hovering ? 1.06 : 1})`;
+    if (hovering || Math.abs(tx - cx) > 0.001 || Math.abs(ty - cy) > 0.001) {
+      raf = requestAnimationFrame(loop);
+    } else { raf = 0; img.style.transform = ''; }
+  };
+  const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
+  const replay = (cls) => { img.classList.remove(cls); void img.offsetWidth; img.classList.add(cls); };
+  img.addEventListener('animationend', () => img.classList.remove('wiggle', 'squash'));
+  wrap.addEventListener('pointermove', (e) => {
+    const r = wrap.getBoundingClientRect();
+    tx = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / (r.width * 0.9)));
+    ty = Math.max(-1, Math.min(1, (e.clientY - (r.top + r.height / 2)) / (r.height * 0.9)));
+    hovering = true;
+    kick();
+  });
+  wrap.addEventListener('pointerleave', () => { tx = 0; ty = 0; hovering = false; kick(); });
+  wrap.addEventListener('pointerdown', () => replay('squash'));
+  wrap.addEventListener('click', () => replay('wiggle'));
+})();
+
+// ── napkin handwriting: name + role + tagline write themselves out ──
+(() => {
+  const lines = [...document.querySelectorAll('.hand-line')];
+  if (!lines.length) return;
+  if (reduceMotion) { lines.forEach((el) => el.classList.add('written')); return; }
+  const jobs = lines.map((el) => ({ el, ht: el.querySelector('.ht') || el, text: el.dataset.text || '' }));
+  jobs.forEach(({ ht }) => { ht.textContent = ''; });
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const typeLine = async ({ el, ht, text }) => {
+    el.classList.add('typing');
+    for (const ch of text) {
+      ht.textContent += ch;
+      await wait(ch === ' ' ? 35 : 45 + Math.random() * 55);
+    }
+    el.classList.remove('typing');
+    el.classList.add('written');
+  };
+  (async () => {
+    while (!document.body.classList.contains('is-ready')) await wait(120);
+    await wait(650);
+    for (let i = 0; i < jobs.length; i++) {
+      await typeLine(jobs[i]);
+      if (i < jobs.length - 1) await wait(230);
+    }
+  })();
+})();
+if (reduceMotion) document.body.classList.add('is-ready');
 
 // ── mumbai clock in the header ──
 (() => {
@@ -242,14 +335,46 @@ document.querySelectorAll('.reveal').forEach((el) => {
   setInterval(tick, 20000);
 })();
 
-// ── new-year countdown: days left, rolled yearly ──
+// ── new-year countdown: days left, re-checked every day + counted up ──
 (() => {
   const el = document.getElementById('nycount');
   if (!el) return;
-  const now = new Date();
-  const target = new Date(now.getFullYear() + 1, 0, 1);
-  const days = Math.max(0, Math.ceil((target - now) / 86400000));
-  el.textContent = days === 0 ? 'happy new year!' : `${days} days → ${target.getFullYear()}`;
+  const DAY = 86400000;
+  const daysLeft = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const target = new Date(today.getFullYear() + 1, 0, 1);
+    return { days: Math.max(0, Math.round((target - today) / DAY)), year: target.getFullYear() };
+  };
+  const label = (days, year) =>
+    days === 0 ? 'happy new year!' : `${days} day${days === 1 ? '' : 's'} → ${year}`;
+  let current = 0;
+  let shownYear = daysLeft().year;
+  const paint = (days, year) => { el.textContent = label(days, year); };
+  const countTo = (to, year) => {
+    if (reduceMotion) { current = to; shownYear = year; paint(current, shownYear); return; }
+    const from = current;
+    if (from === to) { paint(to, year); return; }
+    const t0 = performance.now(), dur = Math.min(1400, 400 + Math.abs(to - from) * 12);
+    const step = (t) => {
+      const p = Math.min(1, (t - t0) / dur);
+      const ez = 1 - Math.pow(1 - p, 3);
+      paint(Math.round(from + (to - from) * ez), year);
+      if (p < 1) requestAnimationFrame(step);
+      else { current = to; shownYear = year; }
+    };
+    requestAnimationFrame(step);
+  };
+  // initial count-up on load
+  const first = daysLeft();
+  countTo(first.days, first.year);
+  // re-check often (covers midnight rollover + sleeping tabs) — updates only when the day changes
+  const refresh = () => {
+    const { days, year } = daysLeft();
+    if (days !== current || year !== shownYear) countTo(days, year);
+  };
+  setInterval(refresh, 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
 })();
 
 // ── github activity: live heatmap, graceful fallback ──

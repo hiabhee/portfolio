@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Caveat:wght@600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script>document.documentElement.classList.add('js')</script>
-<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="styles.css?v=3" />
 </head>
 <body>
 
@@ -25,22 +25,28 @@
 <main class="flow">
 
   <!-- ══ HERO — attention first, name huge ══ -->
-  <section class="hero reveal" id="top" tabindex="-1">
-    <p class="hero-eyebrow"><span class="pulse" aria-hidden="true"></span> Hello — I&rsquo;m</p>
-    <h1 class="hero-name" aria-label="Abhishek Jamdade — AI Engineer">
-      <span class="hero-line">ABHISHEK</span>
-      <span class="hero-line swap" id="nameSwap" aria-hidden="true"><span class="swap-face swap-surname">JAMDADE</span><span class="swap-face swap-role">AI ENGINEER</span></span>
-    </h1>
-    <p class="hero-tag">I build things, break them, <em class="serif-it">and occasionally go outside :)</em></p>
-    <p class="hero-meta">20 y/o &middot; Mumbai, India &mdash; interning at Surefy</p>
-    <div class="row-btns hero-ctas">
-      <a class="pillbtn" href="#work">see my work ↓</a>
-      <a class="linkbtn" href="#about">about me →</a>
-    </div>
-    <div class="orbit">
-      <span class="ochip o1" aria-hidden="true">&lt;/&gt;</span>
-      <span class="ochip o2" aria-hidden="true">#286CFF</span>
-      <span class="ochip o3" aria-hidden="true">v2.0</span>
+  <section class="hero" id="top" tabindex="-1">
+    <div class="napkin" id="napkin">
+      <span class="tape" aria-hidden="true"></span>
+      <div class="napkin-frame">
+        <figure class="face-sticker" id="faceSticker" aria-label="Abhishek's face sticker — hover to say hi">
+          <img class="face-tilt" id="faceTilt" src="assets/face-sticker.png" alt="Sticker of Abhishek wearing headphones" draggable="false" decoding="async" fetchpriority="high" />
+        </figure>
+      </div>
+      <div class="napkin-text">
+        <p class="hand-line" data-text="Abhishek"><span class="ht">Abhishek</span></p>
+        <p class="hand-line" data-text="Jamdade"><span class="ht">Jamdade</span></p>
+        <p class="hand-line role" data-text="AI Engineer"><span class="ht">AI Engineer</span><svg class="hand-under" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path d="M6 14 C 80 8, 220 8, 294 12" pathLength="1"/></svg></p>
+        <p class="hand-line tag" data-text="— Born designer, self-taught engineer"><span class="ht">— Born designer, self-taught engineer</span></p>
+      </div>
+      <div class="napkin-foot">
+        <p class="hero-tag">I build things, break them, <em class="serif-it">and occasionally go outside :)</em></p>
+        <p class="hero-meta">21 y/o &middot; Mumbai, India &mdash; interning at Surefy</p>
+        <div class="row-btns hero-ctas">
+          <a class="pillbtn" href="#work">see my work ↓</a>
+          <a class="linkbtn" href="#about">about me →</a>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -50,7 +56,7 @@
     <span class="scribble left">start here!<svg class="arr" viewBox="0 0 64 48" fill="none"><path d="M58 4C48 18 32 28 12 34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M21 27l-10 7 11 4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
     <p class="kicker">ABOUT ME · INTERN @ SUREFY · MUMBAI</p>
     <h2>Yo, I'm Abhishek — I like figuring out how things work.</h2>
-    <p class="lede">I&rsquo;m <strong>20, doing IT (graduating 2027)</strong>, interning at <strong>Surefy</strong> where I work on AI task stuff with people way more senior than me. I mostly just pick up whatever&rsquo;s broken and ship it.</p>
+    <p class="lede">I&rsquo;m <strong>21, doing IT (graduating 2027)</strong>, interning at <strong>Surefy</strong> where I work on AI task stuff with people way more senior than me. I mostly just pick up whatever&rsquo;s broken and ship it.</p>
     <p class="lede about-sub">Most of my projects start with &ldquo;I wonder how this works&rdquo; — my favorite rabbit hole so far is <a class="inlink" href="#work">ArchDraw ↓</a>: &ldquo;can AI just&hellip; draw my backend for me?&rdquo; Outside code: movies / music · hackathons when I have the energy.</p>
     <div class="statgrid honest">
       <div><b>4</b><span>shipped projects</span></div>
@@ -73,7 +79,8 @@
       <span class="hdl h-bl" aria-hidden="true"></span>
       <span class="hdl h-br" aria-hidden="true"></span>
       <span class="pin"></span>
-      <div class="img portrait">
+      <div class="img portrait" id="portraitWrap">
+        <canvas class="gl3d gl-portrait" id="glPortrait" hidden></canvas>
         <svg viewBox="0 0 220 180" aria-label="Portrait placeholder illustration">
           <rect width="220" height="180" fill="#171719"/>
           <circle cx="110" cy="72" r="34" fill="#F1EFE8"/>
@@ -143,6 +150,27 @@
       </div>
     </div>
     <p class="spec">TOKENS — 22 TOOLS · 8PT GRID · PRESS / HOVER / FOCUS STATES</p>
+  </section>
+
+  <!-- ══ INTERLUDE · STICKER ORBIT (scroll spins one full turn) ══ -->
+  <section class="orbit-sec" id="carry" aria-label="Everyday carry stickers">
+    <div class="orbit-tall" id="orbitTall">
+      <div class="orbit-stage">
+        <p class="kicker orbit-kicker">02.5 · THE EVERYDAY CARRY · SCROLL TO SPIN</p>
+        <div class="orbit-ring" id="orbitRing">
+          <figure class="orbit-card"><img src="assets/laptop.png" alt="laptop sticker" draggable="false" loading="lazy" /></figure>
+          <figure class="orbit-card"><img src="assets/myself.png" alt="photo 01 sticker" draggable="false" loading="lazy" /></figure>
+          <figure class="orbit-card"><img src="assets/headphones.png" alt="headphones sticker" draggable="false" loading="lazy" /></figure>
+          <figure class="orbit-card"><img src="assets/cat2.png" alt="my cat sticker" draggable="false" loading="lazy" /></figure>
+          <figure class="orbit-card"><img src="assets/right_shoes.png" alt="right running shoe sticker" draggable="false" loading="lazy" /></figure>
+          <figure class="orbit-card"><img src="assets/left_shoes.png" alt="left running shoe sticker" draggable="false" loading="lazy" /></figure>
+          <figure class="orbit-card"><img src="assets/codex.png" alt="codex sticker" draggable="false" loading="lazy" /></figure>
+          <figure class="orbit-card"><img src="assets/claude.png" alt="claude sticker" draggable="false" loading="lazy" /></figure>
+        </div>
+        <p class="orbit-count" id="orbitCount" aria-hidden="true">0%</p>
+        <p class="orbit-hint">keep scrolling — one full pass, then the work ↓</p>
+      </div>
+    </div>
   </section>
 
   <!-- ✂ papercut partition -->
@@ -251,10 +279,14 @@
     <span class="tape tang"></span>
     <span class="overlap-pill op-hot" style="top:-14px;right:24px;transform:rotate(3deg)" aria-hidden="true">~24h reply</span>
     <span class="scribble left">say hi!!<svg class="arr" viewBox="0 0 64 48" fill="none"><path d="M58 4C48 18 32 28 12 34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M21 27l-10 7 11 4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-    <p class="kicker">CONTACT · INBOX ALWAYS OPEN</p>
-    <h2>Let's build something useful.</h2>
+    <div class="chead">
+      <div class="chead-t">
+        <p class="kicker">CONTACT · INBOX ALWAYS OPEN</p>
+        <h2>Let's build something useful.</h2>
+      </div>
+      <canvas class="gl3d gl-buddy" id="glBuddy" width="152" height="176" hidden title="Say hi"></canvas>
+    </div>
     <p>Interning, open to full-stack + AI work. Fastest reply: email.</p>
-    <p class="code-line" aria-hidden="true"><span class="k">const</span> openToWork = <span class="s">true</span>;</p>
     <div class="row-btns"><a class="pillbtn" href="mailto:jamdadeabhishek039@gmail.com">jamdadeabhishek039@gmail.com</a></div>
     <div class="socials sticker-sheet">
       <a class="soc" style="--r:-5deg" href="https://github.com/hiabhee" target="_blank" rel="noopener" aria-label="GitHub — @hiabhee"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg><small>github</small></a>
@@ -311,6 +343,7 @@
   <a href="#contact" data-sec="contact"><span class="rn" aria-hidden="true">05</span><i></i><span>Contact</span></a>
 </nav>
 
-<script src="main.js"></script>
+<script src="main.js?v=3"></script>
+<script src="3d.js" defer></script>
 </body>
 </html>
