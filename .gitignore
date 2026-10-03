@@ -3,3 +3,4 @@
 .claude/
 agent/
 skills-lock.json
+.vercel

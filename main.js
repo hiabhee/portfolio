@@ -297,6 +297,40 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
   wrap.addEventListener('click', () => replay('wiggle'));
 })();
 
+// ── motto: tap toggles the latin → english roll (touch has no hover) ──
+(() => {
+  const motto = document.getElementById('motto');
+  if (!motto) return;
+  motto.addEventListener('click', () => motto.classList.toggle('show'));
+})();
+
+// ── figma-style cursor: arrow + "you" pill chasing the pointer ──
+(() => {
+  if (!matchMedia('(pointer: fine)').matches) return;
+  const cur = document.getElementById('figcursor');
+  if (!cur) return;
+  document.body.classList.add('cursor-you');
+  const instant = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let x = innerWidth / 2, y = innerHeight / 2, tx = x, ty = y, raf = 0;
+  const loop = () => {
+    x += (tx - x) * (instant ? 1 : 0.35);
+    y += (ty - y) * (instant ? 1 : 0.35);
+    cur.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
+    if (!instant && (Math.abs(tx - x) > 0.1 || Math.abs(ty - y) > 0.1)) raf = requestAnimationFrame(loop);
+    else raf = 0;
+  };
+  const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
+  addEventListener('pointermove', (e) => {
+    tx = e.clientX; ty = e.clientY;
+    cur.classList.add('on');
+    kick();
+  }, { passive: true });
+  document.addEventListener('mouseleave', () => cur.classList.remove('on'));
+  document.addEventListener('mouseenter', () => cur.classList.add('on'));
+  addEventListener('pointerdown', () => cur.classList.add('press'));
+  addEventListener('pointerup', () => cur.classList.remove('press'));
+})();
+
 // ── napkin handwriting: name + role + tagline write themselves out ──
 (() => {
   const lines = [...document.querySelectorAll('.hand-line')];

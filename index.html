@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Caveat:wght@600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script>document.documentElement.classList.add('js')</script>
-<link rel="stylesheet" href="styles.css?v=3" />
+<link rel="stylesheet" href="styles.css?v=4" />
 </head>
 <body>
 
@@ -42,6 +42,15 @@
       <div class="napkin-foot">
         <p class="hero-tag">I build things, break them, <em class="serif-it">and occasionally go outside :)</em></p>
         <p class="hero-meta">21 y/o &middot; Mumbai, India &mdash; interning at Surefy</p>
+        <p class="motto" id="motto" tabindex="0" title="Hover to translate">
+          <span class="mslot" style="--d:0"><span class="mslot-inner"><span class="lat">Pedes</span><span class="en">with the feet</span></span></span>
+          <span class="mslot" style="--d:1"><span class="mslot-inner"><span class="lat">in</span><span class="en">on</span></span></span>
+          <span class="mslot" style="--d:2"><span class="mslot-inner"><span class="lat">terra</span><span class="en">the ground</span></span></span>
+          <span class="mslot" style="--d:3"><span class="mslot-inner"><span class="lat">ad</span><span class="en">and</span></span></span>
+          <span class="mslot" style="--d:4"><span class="mslot-inner"><span class="lat">sidera</span><span class="en">the eyes</span></span></span>
+          <span class="mslot" style="--d:5"><span class="mslot-inner"><span class="lat">visus</span><span class="en">in the sky.</span></span></span>
+          <span class="motto-hint" aria-hidden="true">(hover to translate)</span>
+        </p>
         <div class="row-btns hero-ctas">
           <a class="pillbtn" href="#work">see my work ↓</a>
           <a class="linkbtn" href="#about">about me →</a>
@@ -169,6 +178,8 @@
         </div>
         <p class="orbit-count" id="orbitCount" aria-hidden="true">0%</p>
         <p class="orbit-hint">keep scrolling — one full pass, then the work ↓</p>
+        <svg class="portal portal-l" viewBox="0 0 140 1000" preserveAspectRatio="none" aria-hidden="true"><path class="portal-line" d="M62 -20 C 48 90 76 150 60 240 C 44 330 72 400 58 490 C 44 580 70 650 56 740 C 42 825 68 900 54 1020"/></svg>
+        <svg class="portal portal-r" viewBox="0 0 140 1000" preserveAspectRatio="none" aria-hidden="true"><path class="portal-line" d="M62 -20 C 48 90 76 150 60 240 C 44 330 72 400 58 490 C 44 580 70 650 56 740 C 42 825 68 900 54 1020"/></svg>
       </div>
     </div>
   </section>
@@ -189,9 +200,9 @@
     <p class="spec">INTERACTION — DRAG · SNAP 6PX · PERSISTS · ←→↑↓ NUDGE</p>
   </section>
 
-  <!-- ══ 03 PRODUCT EXPERIMENTS ══ -->
-  <div class="cluster wide">
-    <section class="piece paper reveal" data-rot="-0.6" data-name="reimbursor" style="--w:400px" tabindex="0">
+  <!-- ══ 03 PROJECTS · sequential showcase 01 → 03 ══ -->
+  <div class="work-seq">
+    <section class="piece paper reveal" data-rot="-0.6" data-name="reimbursor" style="--w:640px" tabindex="0">
       <span class="tape"></span>
       <p class="kicker">02 / PRODUCT · WORKFLOW</p>
       <h2>Reimbursor</h2>
@@ -201,7 +212,7 @@
       <div class="row-btns"><a class="pillbtn" href="https://reimbursor.hiabhee.online/" target="_blank" rel="noopener">Live ↗</a><a class="linkbtn" href="https://github.com/hiabhee/Reimbursor" target="_blank" rel="noopener">Code ↗</a></div>
     </section>
 
-    <section class="piece paper dark reveal" data-rot="0.6" data-name="gitgo" style="--w:400px" tabindex="0">
+    <section class="piece paper dark reveal" data-rot="0.6" data-name="gitgo" style="--w:640px" tabindex="0">
       <p class="kicker light">03 / OPEN SOURCE · DISCOVERY</p>
       <h2>GitGo</h2>
       <p>Match developers with open-source work and generate portfolios from GitHub data.</p>
@@ -267,7 +278,7 @@
       <p class="kicker">PDF · 1 PAGE</p>
       <h2>résumé.pdf</h2>
       <p class="small">Education, internship, stack — no jokes.</p>
-      <div class="row-btns"><a class="pillbtn" href="resume.pdf" download>Get it ↓</a></div>
+      <div class="row-btns"><a class="pillbtn" href="https://drive.google.com/drive/folders/1L4T98MImbngdA_gMu6kRF4ElKG1uGMMN?usp=drive_link" target="_blank" rel="noopener">Get it ↗</a></div>
     </section>
   </div>
 
@@ -343,6 +354,7 @@
   <a href="#contact" data-sec="contact"><span class="rn" aria-hidden="true">05</span><i></i><span>Contact</span></a>
 </nav>
 
+<div class="figcursor" id="figcursor" aria-hidden="true"><div class="figcursor-inner"><svg viewBox="0 0 24 24"><path d="M6 3 L18.5 12 L11.8 13.6 L9.2 20.5 Z"/></svg><span class="figtag">you</span></div></div>
 <script src="main.js?v=3"></script>
 <script src="3d.js" defer></script>
 </body>
