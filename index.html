@@ -10,13 +10,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Caveat:wght@600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script>document.documentElement.classList.add('js')</script>
-<link rel="stylesheet" href="styles.css?v=4" />
+<link rel="stylesheet" href="styles.css?v=18" />
 </head>
 <body>
 
 <a class="skip-link" href="#top">Skip to content</a>
 
-<header class="strip">
+<header class="strip" data-dust-ignore>
   <span class="brand">◍ abhishek <em>/ ai engineer</em></span>
   <span class="zoom-deco" id="clock" title="Local time in Mumbai">◐ MUM --:--</span>
   <a class="hire" href="mailto:jamdadeabhishek039@gmail.com">hire me ↗</a>
@@ -27,21 +27,25 @@
   <!-- ══ HERO — attention first, name huge ══ -->
   <section class="hero" id="top" tabindex="-1">
     <div class="napkin" id="napkin">
-      <span class="tape" aria-hidden="true"></span>
-      <div class="napkin-frame">
+      <div class="hero-scrap">
+        <span class="tape blue" aria-hidden="true"></span>
+        <span class="scrap-label" aria-hidden="true">that&rsquo;s<br>me!</span>
+        <svg class="scrap-arrow draw" data-draw data-dur="0.9" data-delay="0.65" viewBox="0 0 100 72" fill="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M12 2 C 13 25 39 47 78 57"/><path class="ahead" d="M60 43 L80 58 L55 62"/></svg>
+        <div class="napkin-frame">
         <figure class="face-sticker" id="faceSticker" aria-label="Abhishek's face sticker — hover to say hi">
           <img class="face-tilt" id="faceTilt" src="assets/face-sticker.png" alt="Sticker of Abhishek wearing headphones" draggable="false" decoding="async" fetchpriority="high" />
         </figure>
+        </div>
       </div>
       <div class="napkin-text">
-        <p class="hand-line" data-text="Abhishek"><span class="ht">Abhishek</span></p>
-        <p class="hand-line" data-text="Jamdade"><span class="ht">Jamdade</span></p>
-        <p class="hand-line role" data-text="AI Engineer"><span class="ht">AI Engineer</span><svg class="hand-under" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path d="M6 14 C 80 8, 220 8, 294 12" pathLength="1"/></svg></p>
-        <p class="hand-line tag" data-text="— Born designer, self-taught engineer"><span class="ht">— Born designer, self-taught engineer</span></p>
-      </div>
-      <div class="napkin-foot">
-        <p class="hero-tag">I build things, break them, <em class="serif-it">and occasionally go outside :)</em></p>
-        <p class="hero-meta">21 y/o &middot; Mumbai, India &mdash; interning at Surefy</p>
+        <p class="hero-eyebrow hand-note" data-note>Hi, I&rsquo;m</p>
+        <p class="hand-line">Abhishek</p>
+        <p class="hand-line">Jamdade</p>
+        <p class="hand-line role">AI Engineer<svg class="hand-under draw" data-draw data-dur="0.8" data-delay="0.45" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path class="shaft" d="M6 14 C 80 8, 220 8, 294 12" pathLength="1"/></svg></p>
+        <p class="hand-line tag hand-note" data-note>— Born designer, self-taught engineer</p>
+        <div class="napkin-foot">
+          <p class="hero-tag">I build things, break them, <em class="serif-it">and occasionally go outside :)</em></p>
+          <p class="hero-meta">21 y/o &middot; Mumbai, India &mdash; interning at Surefy</p>
         <p class="motto" id="motto" tabindex="0" title="Hover to translate">
           <span class="mslot" style="--d:0"><span class="mslot-inner"><span class="lat">Pedes</span><span class="en">with the feet</span></span></span>
           <span class="mslot" style="--d:1"><span class="mslot-inner"><span class="lat">in</span><span class="en">on</span></span></span>
@@ -55,14 +59,16 @@
           <a class="pillbtn" href="#work">see my work ↓</a>
           <a class="linkbtn" href="#about">about me →</a>
         </div>
+        </div>
       </div>
+      <p class="hero-mantra" aria-hidden="true">ideas<br>design<br>build<br>learn<br>repeat<span>〰</span></p>
     </div>
   </section>
 
   <!-- ══ 01 ABOUT ME ══ -->
   <section class="piece paper reveal" id="about" data-rot="-0.8" data-name="about.me" style="--w:620px" tabindex="0">
     <span class="tape tang"></span>
-    <span class="scribble left">start here!<svg class="arr" viewBox="0 0 64 48" fill="none"><path d="M58 4C48 18 32 28 12 34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M21 27l-10 7 11 4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="scribble left"><span class="hand-note" data-note>start here!</span><svg class="arr draw" data-draw data-dur="0.9" data-delay="0.2" viewBox="0 0 64 48" fill="none" aria-hidden="true"><path class="shaft" d="M58 4C48 18 32 28 12 34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" pathLength="1"/><path class="ahead" d="M21 27l-10 7 11 4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
     <p class="kicker">ABOUT ME · INTERN @ SUREFY · MUMBAI</p>
     <h2>Yo, I'm Abhishek — I like figuring out how things work.</h2>
     <p class="lede">I&rsquo;m <strong>21, doing IT (graduating 2027)</strong>, interning at <strong>Surefy</strong> where I work on AI task stuff with people way more senior than me. I mostly just pick up whatever&rsquo;s broken and ship it.</p>
@@ -90,13 +96,9 @@
       <span class="pin"></span>
       <div class="img portrait" id="portraitWrap">
         <canvas class="gl3d gl-portrait" id="glPortrait" hidden></canvas>
-        <svg viewBox="0 0 220 180" aria-label="Portrait placeholder illustration">
-          <rect width="220" height="180" fill="#171719"/>
-          <circle cx="110" cy="72" r="34" fill="#F1EFE8"/>
-          <path d="M52 180c6-44 32-66 58-66s52 22 58 66z" fill="#F1EFE8"/>
-          <rect x="18" y="18" width="60" height="20" fill="#286CFF"/>
-          <text x="26" y="32" font-family="JetBrains Mono,monospace" font-size="11" fill="#fff">AJ_0205</text>
-        </svg>
+        <img class="portrait-photo" src="assets/abhishek.png" alt="Abhishek Jamdade portrait" draggable="false" loading="lazy" decoding="async" />
+        <span class="portrait-tag" aria-hidden="true">AJ_0205</span>
+        <img class="portrait-cat" src="assets/cat.png" alt="" aria-hidden="true" draggable="false" loading="lazy" />
       </div>
       <p>abhishek — ships + sketches</p>
     </figure>
@@ -166,20 +168,21 @@
     <div class="orbit-tall" id="orbitTall">
       <div class="orbit-stage">
         <p class="kicker orbit-kicker">02.5 · THE EVERYDAY CARRY · SCROLL TO SPIN</p>
+        <div class="orbit-window">
         <div class="orbit-ring" id="orbitRing">
           <figure class="orbit-card"><img src="assets/laptop.png" alt="laptop sticker" draggable="false" loading="lazy" /></figure>
           <figure class="orbit-card"><img src="assets/myself.png" alt="photo 01 sticker" draggable="false" loading="lazy" /></figure>
           <figure class="orbit-card"><img src="assets/headphones.png" alt="headphones sticker" draggable="false" loading="lazy" /></figure>
           <figure class="orbit-card"><img src="assets/cat2.png" alt="my cat sticker" draggable="false" loading="lazy" /></figure>
+          <figure class="orbit-card"><img src="assets/cat.png" alt="cat face sticker" draggable="false" loading="lazy" /></figure>
           <figure class="orbit-card"><img src="assets/right_shoes.png" alt="right running shoe sticker" draggable="false" loading="lazy" /></figure>
           <figure class="orbit-card"><img src="assets/left_shoes.png" alt="left running shoe sticker" draggable="false" loading="lazy" /></figure>
           <figure class="orbit-card"><img src="assets/codex.png" alt="codex sticker" draggable="false" loading="lazy" /></figure>
           <figure class="orbit-card"><img src="assets/claude.png" alt="claude sticker" draggable="false" loading="lazy" /></figure>
         </div>
+        </div>
         <p class="orbit-count" id="orbitCount" aria-hidden="true">0%</p>
         <p class="orbit-hint">keep scrolling — one full pass, then the work ↓</p>
-        <svg class="portal portal-l" viewBox="0 0 140 1000" preserveAspectRatio="none" aria-hidden="true"><path class="portal-line" d="M62 -20 C 48 90 76 150 60 240 C 44 330 72 400 58 490 C 44 580 70 650 56 740 C 42 825 68 900 54 1020"/></svg>
-        <svg class="portal portal-r" viewBox="0 0 140 1000" preserveAspectRatio="none" aria-hidden="true"><path class="portal-line" d="M62 -20 C 48 90 76 150 60 240 C 44 330 72 400 58 490 C 44 580 70 650 56 740 C 42 825 68 900 54 1020"/></svg>
       </div>
     </div>
   </section>
@@ -190,9 +193,18 @@
   <!-- ══ 03 PROJECTS ══ -->
   <section class="piece paper reveal" id="work" data-rot="0.4" data-name="archdraw" style="--w:640px" tabindex="0">
     <span class="tape blue"></span>
-    <span class="overlap-pill" style="top:-14px;right:24px;transform:rotate(3deg)" aria-hidden="true">★ start here</span>
+    <span class="overlap-pill" style="top:-14px;right:24px;transform:rotate(3deg)" aria-hidden="true">
+      ★ start here
+      <svg class="featured-ring draw" data-draw data-dur="0.72" data-delay="0.18" viewBox="0 0 220 68" aria-hidden="true">
+        <path class="shaft" d="M112 10 C 162 5 206 16 207 34 C 209 53 166 63 111 60 C 58 63 13 52 12 35 C 10 18 59 7 106 10 C 109 10 112 10 116 10" pathLength="1" />
+      </svg>
+    </span>
     <p class="kicker">01 / FEATURED PROJECT · AI / DEV TOOLS</p>
     <h2>ArchDraw</h2>
+    <figure class="shot">
+      <span class="tape blue"></span>
+      <img src="assets/archdraw-preview.png" alt="ArchDraw — prompt to architecture diagram app" loading="lazy" decoding="async" />
+    </figure>
     <p>Convert prompts and GitHub repos into editable system architecture diagrams. Started with &ldquo;can AI just&hellip; draw my backend for me?&rdquo;</p>
     <p class="stackline">Next.js 16 · React Flow · Groq · Prisma</p>
     <p class="small">Hardest part: turning inconsistent AI output into diagrams that stay valid, readable, editable, and repeatable — solved with a 6-stage prompt pipeline, a 10-stage repo analysis pipeline, and a 10-tool MCP server.</p>
@@ -206,6 +218,10 @@
       <span class="tape"></span>
       <p class="kicker">02 / PRODUCT · WORKFLOW</p>
       <h2>Reimbursor</h2>
+      <figure class="shot">
+        <span class="tape"></span>
+        <img src="assets/reimbursor-preview.png" alt="Reimbursor — expense approval workflow app" loading="lazy" decoding="async" />
+      </figure>
       <p>Run employee expenses through configurable, multi-level approval workflows — no chasing people on chat.</p>
       <p class="stackline">Next.js · Prisma · PostgreSQL · NextAuth</p>
       <p class="small">Hardest part: keeping multi-tenant permissions and sequential / parallel approval state transitions predictable.</p>
@@ -215,6 +231,9 @@
     <section class="piece paper dark reveal" data-rot="0.6" data-name="gitgo" style="--w:640px" tabindex="0">
       <p class="kicker light">03 / OPEN SOURCE · DISCOVERY</p>
       <h2>GitGo</h2>
+      <figure class="shot dark-shot">
+        <img src="assets/gitgo-preview.png" alt="GitGo — open-source matching app" loading="lazy" decoding="async" />
+      </figure>
       <p>Match developers with open-source work and generate portfolios from GitHub data.</p>
       <p class="stackline">Next.js · GitHub API · MongoDB · Redis</p>
       <p class="small dim">Skill-based matching with beginner-friendly issue filters, plus a schema-driven portfolio builder — 4 templates, 6 themes, HTML export.</p>
@@ -289,13 +308,14 @@
   <section class="piece paper reveal" id="contact" data-rot="0.5" data-name="contact.card" style="--w:560px" tabindex="0">
     <span class="tape tang"></span>
     <span class="overlap-pill op-hot" style="top:-14px;right:24px;transform:rotate(3deg)" aria-hidden="true">~24h reply</span>
-    <span class="scribble left">say hi!!<svg class="arr" viewBox="0 0 64 48" fill="none"><path d="M58 4C48 18 32 28 12 34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M21 27l-10 7 11 4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="scribble left"><span class="hand-note" data-note>say hi!!</span><svg class="arr draw" data-draw data-dur="0.9" data-delay="0.2" viewBox="0 0 64 48" fill="none" aria-hidden="true"><path class="shaft" d="M58 4C48 18 32 28 12 34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" pathLength="1"/><path class="ahead" d="M21 27l-10 7 11 4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
     <div class="chead">
       <div class="chead-t">
         <p class="kicker">CONTACT · INBOX ALWAYS OPEN</p>
         <h2>Let's build something useful.</h2>
       </div>
       <canvas class="gl3d gl-buddy" id="glBuddy" width="152" height="176" hidden title="Say hi"></canvas>
+      <figure class="scout" aria-hidden="true"><img src="assets/flow-scout.png" alt="" draggable="false" loading="lazy" /><figcaption>ship it!</figcaption></figure>
     </div>
     <p>Interning, open to full-stack + AI work. Fastest reply: email.</p>
     <div class="row-btns"><a class="pillbtn" href="mailto:jamdadeabhishek039@gmail.com">jamdadeabhishek039@gmail.com</a></div>
@@ -322,7 +342,6 @@
     <span class="ring"></span>
   </div>
   <div class="side side-r">
-    <span class="side-chip blue">SUREFY &middot; INTERN</span>
     <span class="dotgrid"></span>
     <span class="side-v">AI SYSTEMS &rarr; INTERFACES</span>
     <span class="side-rule"></span>
@@ -334,18 +353,15 @@
   <div class="piece sticker s-note reveal" data-rot="-1" data-name="sticker.ship" style="--w:160px;top:8%;left:max(14px,2vw)" tabindex="0"><p>ship &gt; perfect</p></div>
   <div class="piece sticker s-badge reveal" data-rot="1" data-name="sticker.badge" style="--w:110px;top:20%;right:max(14px,2vw)" tabindex="0"><p>AJ</p></div>
   <div class="piece sticker s-chip reveal" data-rot="1" data-name="sticker.est" style="--w:150px;top:63%;left:max(14px,2vw)" tabindex="0"><p>EST. 2026 &#9733;</p></div>
-  <div class="piece sticker s-note reveal" data-rot="-1" data-name="sticker.coffee" style="--w:160px;top:46%;right:max(14px,2vw)" tabindex="0"><p>coffee &rarr; code</p></div>
-  <div class="piece sticker s-paper reveal" data-rot="-0.8" data-name="sticker.tag" style="--w:170px;top:78%;left:max(14px,2vw)" tabindex="0"><p>AJ/0205 &middot; THAN&rarr;WORLD</p></div>
   <div class="piece sticker s-code reveal" data-rot="0.8" data-name="sticker.hire" style="--w:170px;top:32%;left:max(14px,2vw)" tabindex="0"><p><span class="k">const</span> hire = () =&gt; <span class="s">true</span>;</p></div>
-  <div class="piece sticker s-chip reveal" data-rot="-1" data-name="sticker.quasar" style="--w:190px;top:84%;right:max(14px,2vw)" tabindex="0"><p>TOP 60 @ QUASAR 4.0</p></div>
 </div>
-<p class="hint" id="hint">grab cards to rearrange · scroll for more ↓</p>
+<p class="hint" id="hint">little stickers are draggable · scroll for more ↓</p>
 <p class="ny-float" aria-hidden="true"><span class="cdot"></span><span id="nycount">counting…</span></p>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="guide guide-v" id="guideV"></div>
 <div class="guide guide-h" id="guideH"></div>
 
-<nav class="rail" aria-label="Sections">
+<nav class="rail" aria-label="Sections" data-dust-ignore>
   <span class="rail-title" aria-hidden="true">INDEX</span>
   <a href="#top" data-sec="top"><span class="rn" aria-hidden="true">01</span><i></i><span>Top</span></a>
   <a href="#about" data-sec="about"><span class="rn" aria-hidden="true">02</span><i></i><span>About</span></a>
@@ -354,8 +370,10 @@
   <a href="#contact" data-sec="contact"><span class="rn" aria-hidden="true">05</span><i></i><span>Contact</span></a>
 </nav>
 
-<div class="figcursor" id="figcursor" aria-hidden="true"><div class="figcursor-inner"><svg viewBox="0 0 24 24"><path d="M6 3 L18.5 12 L11.8 13.6 L9.2 20.5 Z"/></svg><span class="figtag">you</span></div></div>
-<script src="main.js?v=3"></script>
+<div class="figcursor" id="figcursor" aria-hidden="true"><div class="figcursor-inner"><svg viewBox="0 0 28 30"><path d="M1.2 0 26.1 13.6l-8.9 1.8 4.8 9.7-4.3 2.1-5.1-10.1-8 8.5z"/></svg><span class="figtag">Abhishek</span></div></div>
+<script src="main.js?v=7"></script>
 <script src="3d.js" defer></script>
+<script src="assets/vendor/html2canvas.min.js" defer></script>
+<script src="dust.js?v=4" defer></script>
 </body>
 </html>

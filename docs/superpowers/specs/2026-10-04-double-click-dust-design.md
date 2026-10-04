@@ -11,9 +11,9 @@ The target stays hidden for the rest of the current page load. A full refresh re
 
 ## Scope
 
-Eligible targets are visible, rendered content elements with a measurable box: text, headings, images, SVG artwork, cards, stickers, and similar page content. The effect targets the element under the pointer, rather than automatically removing its nearest card or section. If the event lands on a child path inside inline SVG artwork, resolve the target to its containing `<svg>` so the capture contains the full drawing.
+Eligible targets are visible, rendered content elements with a measurable box: text, headings, images, SVG artwork, cards, stickers, and similar page content. The effect targets the element under the pointer, rather than automatically removing its nearest section. For designated floating scrapbook objects (movable stickers, portrait/photo cards, orbit stickers, and the small scout illustration), a click on any child selects that one complete floating object. If the event lands on a child shape inside other inline SVG artwork, capture the containing `<svg>` for pixels, but crop the burst and hide only the exact SVG child that received the event.
 
-Links and buttons are never dust targets. Their normal click behavior remains immediate. A click on a nested label or icon inside a link or button is excluded by checking the target’s ancestors. Form controls, editable content, hidden or zero-size nodes, and document-level or fixed navigation shells (`html`, `body`, `main`, the header, and the navigation rail) are also excluded. Double-clicking a card’s blank area may dust that card; double-clicking one of its links or buttons will not.
+Links and buttons are never dust targets. Their normal click behavior remains immediate. A click on a nested label or icon inside a link or button is excluded by checking the event path. Menus and navigation shells are excluded explicitly, including their child labels and icons. Form controls, editable content, hidden or zero-size nodes, and document-level or fixed navigation shells (`html`, `body`, `main`, the header, and the navigation rail) are also excluded. Double-clicking a card’s blank area may dust that card; double-clicking one of its links or buttons will not.
 
 The first implementation responds to mouse double-clicks. Touch double-tap is out of scope.
 

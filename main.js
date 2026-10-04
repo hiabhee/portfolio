@@ -45,11 +45,13 @@ if (!reduceMotion) {
     clearTimeout(timer);
     timer = setTimeout(cut, showRole ? HOLD_ROLE : HOLD_SURNAME);
   }
-  const io = new IntersectionObserver(([e]) => {
-    clearTimeout(timer);
-    if (e.isIntersecting && !document.hidden) timer = setTimeout(cut, HOLD_SURNAME);
-  }, { threshold: 0.3 });
-  io.observe(swap);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(([e]) => {
+      clearTimeout(timer);
+      if (e.isIntersecting && !document.hidden) timer = setTimeout(cut, HOLD_SURNAME);
+    }, { threshold: 0.3 });
+    io.observe(swap);
+  }
   document.addEventListener('visibilitychange', () => {
     clearTimeout(timer);
     if (!document.hidden) timer = setTimeout(cut, HOLD_SURNAME);
@@ -66,8 +68,10 @@ function save(id, x, y) {
   store[id] = { x: Math.round(x), y: Math.round(y) };
   try { localStorage.setItem('board-v2', JSON.stringify(store)); } catch {}
 }
+// decor-only drag: primary papers stay put, small scraps move + persist
+const DECOR_SEL = '.stickers .sticker, .cluster .photo, .cluster .note-big, .scout';
 if (!mobileLayout) {
-  document.querySelectorAll('.piece[data-name]').forEach((el) => {
+  document.querySelectorAll('.stickers .sticker[data-name], .cluster .photo[data-name], .cluster .note-big[data-name]').forEach((el) => {
     const s = store[el.dataset.name];
     if (s) el.style.transform = `translate(${s.x}px,${s.y}px) rotate(${el.dataset.rot || 0}deg)`;
   });
@@ -194,10 +198,13 @@ function makeDraggable(el, { persistKey } = {}) {
 }
 
 if (!mobileLayout) {
-  document.querySelectorAll('.piece').forEach((el) => makeDraggable(el, { persistKey: el.dataset.name }));
+  document.querySelectorAll(DECOR_SEL).forEach((el) => {
+    el.classList.add('draggable');
+    makeDraggable(el, { persistKey: el.dataset.name });
+  });
 }
 
-if (matchMedia('(pointer: coarse)').matches) hint.textContent = 'drag cards by the tape · scroll for more ↓';
+if (matchMedia('(pointer: coarse)').matches) hint.textContent = 'drag the little stickers · scroll for more ↓';
 
 // ── toast / hint ──
 let toastT;
@@ -254,19 +261,27 @@ railSpy();
 
 // ── scroll reveals: sections rise in as they enter the viewport ──
 (() => {
+  const reveals = [...document.querySelectorAll('.reveal')];
   if (reduceMotion) {
-    document.querySelectorAll('.reveal').forEach((el) => el.classList.add('in'));
+    reveals.forEach((el) => el.classList.add('in'));
     document.body.classList.add('is-ready');
+    return;
+  }
+  if (!('IntersectionObserver' in window)) {
+    reveals.forEach((el) => el.classList.add('in'));
     return;
   }
   const io = new IntersectionObserver((es) => es.forEach((e) => {
     if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
   }), { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
-  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  reveals.forEach((el) => io.observe(el));
 })();
 
 // ── hero loads immediately, everything else waits for scroll ──
-requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('is-ready')));
+requestAnimationFrame(() => requestAnimationFrame(() => {
+  document.body.classList.add('is-ready');
+  document.dispatchEvent(new Event('portfolio:ready'));
+}));
 
 // ── face sticker gestures: leans toward your cursor, squashes on poke, wiggles on click ──
 (() => {
@@ -313,8 +328,8 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
   const instant = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let x = innerWidth / 2, y = innerHeight / 2, tx = x, ty = y, raf = 0;
   const loop = () => {
-    x += (tx - x) * (instant ? 1 : 0.35);
-    y += (ty - y) * (instant ? 1 : 0.35);
+    x += (tx - x) * (instant ? 1 : 0.68);
+    y += (ty - y) * (instant ? 1 : 0.68);
     cur.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
     if (!instant && (Math.abs(tx - x) > 0.1 || Math.abs(ty - y) > 0.1)) raf = requestAnimationFrame(loop);
     else raf = 0;
@@ -331,31 +346,53 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
   addEventListener('pointerup', () => cur.classList.remove('press'));
 })();
 
-// ── napkin handwriting: name + role + tagline write themselves out ──
+// ── reusable SVG scribbles: paths draw on view; optional heads follow ──
 (() => {
-  const lines = [...document.querySelectorAll('.hand-line')];
-  if (!lines.length) return;
-  if (reduceMotion) { lines.forEach((el) => el.classList.add('written')); return; }
-  const jobs = lines.map((el) => ({ el, ht: el.querySelector('.ht') || el, text: el.dataset.text || '' }));
-  jobs.forEach(({ ht }) => { ht.textContent = ''; });
-  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-  const typeLine = async ({ el, ht, text }) => {
-    el.classList.add('typing');
-    for (const ch of text) {
-      ht.textContent += ch;
-      await wait(ch === ' ' ? 35 : 45 + Math.random() * 55);
-    }
-    el.classList.remove('typing');
-    el.classList.add('written');
+  const draws = [...document.querySelectorAll('[data-draw]')];
+  const notes = [...document.querySelectorAll('[data-note]')];
+  draws.forEach((el) => {
+    const requestedDuration = Number.parseFloat(el.dataset.dur);
+    const requestedDelay = Number.parseFloat(el.dataset.delay);
+    const duration = Number.isFinite(requestedDuration)
+      ? Math.min(1.2, Math.max(0.5, requestedDuration)) : 0.8;
+    const delay = Number.isFinite(requestedDelay) ? Math.max(0, requestedDelay) : 0;
+    el.style.setProperty('--dur', `${duration}s`);
+    el.style.setProperty('--delay', `${delay}s`);
+    el.style.setProperty('--draw-from', el.dataset.direction === 'reverse' ? '-1' : '1');
+  });
+  const targets = [...draws, ...notes];
+  const reveal = (el, instant = false) => {
+    if (instant) el.classList.add('motion-static');
+    el.classList.add(el.hasAttribute('data-draw') ? 'drawn' : 'note-in');
   };
-  (async () => {
-    while (!document.body.classList.contains('is-ready')) await wait(120);
-    await wait(650);
-    for (let i = 0; i < jobs.length; i++) {
-      await typeLine(jobs[i]);
-      if (i < jobs.length - 1) await wait(230);
-    }
-  })();
+  if (reduceMotion) {
+    targets.forEach((el) => reveal(el));
+    document.body.classList.add('is-ready');
+    return;
+  }
+  let ready = document.body.classList.contains('is-ready');
+  const pendingHero = new Set();
+  const enter = (el) => {
+    if (!ready && el.closest('.hero')) pendingHero.add(el);
+    else reveal(el);
+  };
+  const onReady = () => {
+    ready = true;
+    pendingHero.forEach((el) => reveal(el));
+    pendingHero.clear();
+  };
+  document.addEventListener('portfolio:ready', onReady, { once: true });
+  if (ready) onReady();
+  targets.filter((el) => el.dataset.triggerOnView === 'false').forEach(enter);
+  const observed = targets.filter((el) => el.dataset.triggerOnView !== 'false');
+  if (!('IntersectionObserver' in window)) {
+    observed.forEach((el) => reveal(el, true));
+    return;
+  }
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting) { enter(e.target); io.unobserve(e.target); }
+  }), { threshold: 0.25 });
+  observed.forEach((el) => io.observe(el));
 })();
 if (reduceMotion) document.body.classList.add('is-ready');
 
@@ -411,50 +448,59 @@ if (reduceMotion) document.body.classList.add('is-ready');
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
 })();
 
-// ── github activity: live heatmap, graceful fallback ──
+// ── github activity: render a bundled snapshot first, then refresh live ──
 (() => {
   const weeksEl = document.getElementById('calWeeks');
   const monthsEl = document.getElementById('calMonths');
   const totalEl = document.getElementById('calTotal');
-  if (!weeksEl || !monthsEl || !totalEl) return;
+  const calWrap = document.querySelector('.calwrap');
+  if (!weeksEl || !monthsEl || !totalEl || !calWrap) return;
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const fmt = (iso) => {
     const d = new Date(iso + 'T12:00:00');
     return `${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
   };
-  fetch('https://github-contributions-api.jogruber.de/v4/hiabhee?y=last')
-    .then((r) => { if (!r.ok) throw new Error('gh api'); return r.json(); })
-    .then((data) => {
-      const days = data.contributions;
-      if (!days || !days.length) throw new Error('empty');
-      // pad so the first column starts on Sunday
-      const lead = new Date(days[0].date + 'T12:00:00').getDay();
-      for (let i = 0; i < lead; i++) {
-        const pad = document.createElement('i');
-        pad.className = 'pad'; pad.setAttribute('aria-hidden', 'true');
-        weeksEl.appendChild(pad);
+  const render = (days) => {
+    if (!Array.isArray(days) || !days.length) return false;
+    weeksEl.replaceChildren();
+    monthsEl.replaceChildren();
+    const lead = new Date(days[0].date + 'T12:00:00').getDay();
+    for (let i = 0; i < lead; i++) {
+      const pad = document.createElement('i');
+      pad.className = 'pad'; pad.setAttribute('aria-hidden', 'true');
+      weeksEl.appendChild(pad);
+    }
+    let total = 0, lastMonth = -1;
+    days.forEach((d, idx) => {
+      total += d.count;
+      const cell = document.createElement('i');
+      if (d.level > 0) cell.className = 'l' + d.level;
+      cell.title = `${d.count} contribution${d.count === 1 ? '' : 's'} on ${fmt(d.date)}`;
+      weeksEl.appendChild(cell);
+      const col = Math.floor((idx + lead) / 7);
+      const m = new Date(d.date + 'T12:00:00').getMonth();
+      if (m !== lastMonth && (idx + lead) % 7 === 0) {
+        lastMonth = m;
+        const lab = document.createElement('span');
+        lab.textContent = MONTHS[m];
+        lab.style.left = (col * parseFloat(getComputedStyle(weeksEl).getPropertyValue('--cal-step'))) + 'px';
+        monthsEl.appendChild(lab);
       }
-      let total = 0, lastMonth = -1;
-      days.forEach((d, idx) => {
-        total += d.count;
-        const cell = document.createElement('i');
-        if (d.level > 0) cell.className = 'l' + d.level;
-        cell.title = `${d.count} contribution${d.count === 1 ? '' : 's'} on ${fmt(d.date)}`;
-        weeksEl.appendChild(cell);
-        // month label at the first column where a new month appears
-        const col = Math.floor((idx + lead) / 7);
-        const m = new Date(d.date + 'T12:00:00').getMonth();
-        if (m !== lastMonth && (idx + lead) % 7 === 0) {
-          lastMonth = m;
-          const lab = document.createElement('span');
-          lab.textContent = MONTHS[m];
-          lab.style.left = (col * 14) + 'px';
-          monthsEl.appendChild(lab);
-        }
-      });
-      totalEl.textContent = `${total.toLocaleString('en-US')} contributions · ${fmt(days[0].date)} – ${fmt(days[days.length - 1].date)}`;
-    })
+    });
+    totalEl.textContent = `${total.toLocaleString('en-US')} contributions · ${fmt(days[0].date)} – ${fmt(days[days.length - 1].date)}`;
+    requestAnimationFrame(() => { calWrap.scrollLeft = calWrap.scrollWidth; });
+    return true;
+  };
+  fetch('assets/github-contributions.json')
+    .then((r) => { if (!r.ok) throw new Error('snapshot'); return r.json(); })
+    .then((data) => render(data.contributions))
+    .catch(() => {})
+    .then(() => fetch('https://github-contributions-api.jogruber.de/v4/hiabhee?y=last'))
+    .then((r) => { if (!r.ok) throw new Error('gh api'); return r.json(); })
+    .then((data) => render(data.contributions))
     .catch(() => {
-      totalEl.innerHTML = 'live graph is shy today — <a class="linkbtn" href="https://github.com/hiabhee" target="_blank" rel="noopener">see it on GitHub ↗</a>';
+      if (!weeksEl.children.length) {
+        totalEl.innerHTML = 'live graph is shy today — <a class="linkbtn" href="https://github.com/hiabhee" target="_blank" rel="noopener">see it on GitHub ↗</a>';
+      }
     });
 })();
