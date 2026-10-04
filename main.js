@@ -460,11 +460,16 @@ if (reduceMotion) document.body.classList.add('is-ready');
     const d = new Date(iso + 'T12:00:00');
     return `${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
   };
+  let gridObserver = null;
+  let gridResizeFallback = null;
   const render = (days) => {
     if (!Array.isArray(days) || !days.length) return false;
+    gridObserver?.disconnect();
+    if (gridResizeFallback) removeEventListener('resize', gridResizeFallback);
     weeksEl.replaceChildren();
     monthsEl.replaceChildren();
     const lead = new Date(days[0].date + 'T12:00:00').getDay();
+    const columnCount = Math.ceil((days.length + lead) / 7);
     for (let i = 0; i < lead; i++) {
       const pad = document.createElement('i');
       pad.className = 'pad'; pad.setAttribute('aria-hidden', 'true');
@@ -483,12 +488,29 @@ if (reduceMotion) document.body.classList.add('is-ready');
         lastMonth = m;
         const lab = document.createElement('span');
         lab.textContent = MONTHS[m];
-        lab.style.left = (col * parseFloat(getComputedStyle(weeksEl).getPropertyValue('--cal-step'))) + 'px';
+        lab.dataset.col = col;
         monthsEl.appendChild(lab);
       }
     });
     totalEl.textContent = `${total.toLocaleString('en-US')} contributions · ${fmt(days[0].date)} – ${fmt(days[days.length - 1].date)}`;
-    requestAnimationFrame(() => { calWrap.scrollLeft = calWrap.scrollWidth; });
+    const sizeGrid = () => {
+      const gap = parseFloat(getComputedStyle(weeksEl).columnGap) || 0;
+      const cellSize = Math.max(2, (weeksEl.clientWidth - gap * (columnCount - 1)) / columnCount);
+      const step = cellSize + gap;
+      weeksEl.style.setProperty('--cal-cell', `${cellSize}px`);
+      weeksEl.style.setProperty('--cal-step', `${step}px`);
+      monthsEl.querySelectorAll('span').forEach((lab) => {
+        lab.style.left = `${Number(lab.dataset.col) * step}px`;
+      });
+    };
+    requestAnimationFrame(sizeGrid);
+    if ('ResizeObserver' in window) {
+      gridObserver = new ResizeObserver(sizeGrid);
+      gridObserver.observe(calWrap);
+    } else {
+      gridResizeFallback = sizeGrid;
+      addEventListener('resize', gridResizeFallback, { passive: true });
+    }
     return true;
   };
   fetch('assets/github-contributions.json')
