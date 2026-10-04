@@ -9,8 +9,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Caveat:wght@600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script>document.documentElement.classList.add('js')</script>
-<link rel="stylesheet" href="styles.css?v=23" />
+<script>
+  document.documentElement.classList.add('js');
+  try {
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('portfolio-intro-seen')) {
+      document.documentElement.classList.add('hero-intro');
+      sessionStorage.setItem('portfolio-intro-seen', '1');
+    }
+  } catch {}
+</script>
+<link rel="stylesheet" href="styles.css?v=35" />
 </head>
 <body>
 
@@ -26,38 +34,38 @@
 
   <!-- ══ HERO — attention first, name huge ══ -->
   <section class="hero" id="top" tabindex="-1">
+    <button class="intro-skip" id="introSkip" type="button">Skip intro <span aria-hidden="true">↘</span></button>
     <div class="napkin" id="napkin">
       <div class="hero-scrap">
         <span class="tape blue" aria-hidden="true"></span>
-        <span class="scrap-label" aria-hidden="true">that&rsquo;s<br>me!</span>
-        <svg class="scrap-arrow draw" data-draw data-dur="0.9" data-delay="0.65" viewBox="0 0 100 72" fill="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M12 2 C 13 25 39 47 78 57"/><path class="ahead" d="M60 43 L80 58 L55 62"/></svg>
+        <span class="scrap-label" data-note>designer<br>by heart</span>
+        <svg class="scrap-arrow draw" data-draw data-dur="0.9" data-delay="0.78" viewBox="0 0 100 72" fill="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M9 3 C 12 28 36 49 78 61"/><path class="ahead" d="M58 47 L80 62 L56 67"/></svg>
+        <span class="scrap-photo-patch" aria-hidden="true"></span>
+        <svg class="scrap-burst draw" data-draw data-dur="0.55" data-delay="1.18" viewBox="0 0 64 72" fill="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M12 27 22 8"/><path class="shaft" pathLength="1" d="M29 34 43 19"/><path class="shaft" pathLength="1" d="M42 45 60 41"/></svg>
         <div class="napkin-frame">
         <figure class="face-sticker" id="faceSticker" aria-label="Abhishek's face sticker — hover to say hi">
           <img class="face-tilt" id="faceTilt" src="assets/face-sticker.png" alt="Sticker of Abhishek wearing headphones" draggable="false" decoding="async" fetchpriority="high" />
         </figure>
         </div>
+        <span class="scrap-terminal" aria-hidden="true">&gt;_</span>
+        <span class="scrap-engineer" data-note>engineer<br>by profession<svg class="scrap-engineer-arrow draw" data-draw data-dur="0.65" data-delay="1.4" viewBox="0 0 72 58" fill="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M64 53 C 44 44 26 29 13 8"/><path class="ahead" d="M12 26 12 7 30 15"/></svg><svg class="scrap-engineer-underline draw" data-draw data-dur="0.7" data-delay="1.85" viewBox="0 0 190 16" fill="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M3 11 C 47 3 116 10 186 4"/></svg></span>
       </div>
       <div class="napkin-text">
         <p class="hero-eyebrow hand-note" data-note>Hi, I&rsquo;m</p>
         <p class="hand-line">Abhishek</p>
         <p class="hand-line">Jamdade</p>
         <p class="hand-line role">AI Engineer<svg class="hand-under draw" data-draw data-dur="0.8" data-delay="0.45" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path class="shaft" d="M6 14 C 80 8, 220 8, 294 12" pathLength="1"/></svg></p>
-        <p class="hand-line tag hand-note" data-note>— Born designer, self-taught engineer</p>
         <div class="napkin-foot">
-          <p class="hero-tag">I build things, break them, <em class="serif-it">and occasionally go outside :)</em></p>
           <p class="hero-meta">21 y/o &middot; Mumbai, India &mdash; interning at Surefy</p>
         <p class="motto" id="motto" tabindex="0" title="Hover to translate">
-          <span class="mslot" style="--d:0"><span class="mslot-inner"><span class="lat">Pedes</span><span class="en">with the feet</span></span></span>
-          <span class="mslot" style="--d:1"><span class="mslot-inner"><span class="lat">in</span><span class="en">on</span></span></span>
-          <span class="mslot" style="--d:2"><span class="mslot-inner"><span class="lat">terra</span><span class="en">the ground</span></span></span>
-          <span class="mslot" style="--d:3"><span class="mslot-inner"><span class="lat">ad</span><span class="en">and</span></span></span>
-          <span class="mslot" style="--d:4"><span class="mslot-inner"><span class="lat">sidera</span><span class="en">the eyes</span></span></span>
-          <span class="mslot" style="--d:5"><span class="mslot-inner"><span class="lat">visus</span><span class="en">in the sky.</span></span></span>
+          <span class="motto-stack" aria-live="polite">
+            <span class="motto-phrase motto-lat">Pedes in terra ad sidera visus</span>
+            <span class="motto-phrase motto-en">feet on the ground, eyes on the stars.</span>
+          </span>
           <span class="motto-hint" aria-hidden="true">(hover to translate)</span>
         </p>
         <div class="row-btns hero-ctas">
           <a class="pillbtn" href="#work">see my work ↓</a>
-          <a class="linkbtn" href="#about">about me →</a>
         </div>
         </div>
       </div>
@@ -86,33 +94,11 @@
     <p class="spec">SYSTEM — GRID 24PX · RADIUS 14PX · INTER / JETBRAINS MONO</p>
   </section>
 
-  <div class="cluster">
-    <figure class="piece photo frame reveal" data-rot="0.7" data-name="self.portrait" style="--w:250px" tabindex="0">
-      <span class="pin"></span>
-      <span class="hdl h-tl" aria-hidden="true"></span>
-      <span class="hdl h-tr" aria-hidden="true"></span>
-      <span class="hdl h-bl" aria-hidden="true"></span>
-      <span class="hdl h-br" aria-hidden="true"></span>
-      <span class="pin"></span>
-      <div class="img portrait" id="portraitWrap">
-        <canvas class="gl3d gl-portrait" id="glPortrait" hidden></canvas>
-        <img class="portrait-photo" src="assets/abhishek.png" alt="Abhishek Jamdade portrait" draggable="false" loading="lazy" decoding="async" />
-        <span class="portrait-tag" aria-hidden="true">AJ_0205</span>
-        <img class="portrait-cat" src="assets/cat.png" alt="" aria-hidden="true" draggable="false" loading="lazy" />
-      </div>
-      <p>abhishek — ships + sketches</p>
-    </figure>
-    <aside class="piece note-big reveal" data-rot="-0.7" data-name="note.hireable" style="--w:270px" tabindex="0">
-      <span class="tape pink"></span>
-      <p>systems first, screens second — pipelines, state machines, then UI.</p>
-    </aside>
-  </div>
-
   <!-- ══ 01.5 GITHUB ACTIVITY ══ -->
   <section class="piece paper reveal" id="activity" data-rot="-0.4" data-name="activity.graph" style="--w:900px" tabindex="0">
     <span class="tape"></span>
     <p class="kicker">IN THE OPEN · GITHUB</p>
-    <h2>A year of showing up.</h2>
+    <h2 class="scribble-heading"><span class="scribble-title">A year of showing up.<svg class="title-underline draw" data-draw data-dur="0.72" data-delay="0.14" viewBox="0 0 300 18" preserveAspectRatio="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M4 11 C 83 5 218 13 294 6"/></svg></span></h2>
     <p>Small commits, steady progress — live from my GitHub.</p>
     <p class="small dim cal-hint">the full year · 52 weeks at a glance</p>
     <div class="calwrap">
@@ -132,42 +118,51 @@
   <div class="cut reveal" aria-hidden="true"><span class="cut-tag">02 · SKILLS</span><span class="cut-line"></span><span class="cut-sc">✂</span></div>
 
   <!-- ══ 02 SKILLS ══ -->
-  <section class="piece paper reveal" id="skills" data-rot="0.6" data-name="skills.stack" style="--w:640px" tabindex="0">
+  <section class="piece paper reveal skills-paper" id="skills" data-rot="0.6" data-name="skills.stack" style="--w:1000px" tabindex="0">
     <span class="tape blue"></span>
     <span class="overlap-pill op-l" style="top:-14px;left:24px;transform:rotate(-3deg)" aria-hidden="true">22 tools</span>
     <p class="kicker">TOOLKIT · WHAT I REACH FOR MOST</p>
-    <h2>Skills, minus the buzzwords.</h2>
+    <h2 class="scribble-heading"><span class="scribble-title">Skills, minus the buzzwords.<svg class="title-underline draw" data-draw data-dur="0.72" data-delay="0.14" viewBox="0 0 420 18" preserveAspectRatio="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M4 11 C 105 5 297 13 414 6"/></svg></span></h2>
     <p>Strongest combo: <strong>Next.js + AI pipelines</strong> — the rest I pick up as the build demands.</p>
     <div class="skillgroups">
       <div class="skillgroup">
-        <h3>Frontend</h3>
-        <div class="tags"><span>Next.js</span><span>React</span><span>TypeScript</span><span>JavaScript</span><span>Tailwind CSS</span><span>React Flow</span></div>
+        <h3 class="skill-label label-blue">Frontend</h3>
+        <div class="skill-chips">
+          <span class="skill-chip"><img class="skill-logo logo-next" src="assets/skills/nextdotjs.svg" alt="" aria-hidden="true">Next.js</span><span class="skill-chip"><img class="skill-logo" src="assets/skills/react.svg" alt="" aria-hidden="true">React</span><span class="skill-chip"><img class="skill-logo" src="assets/skills/typescript.svg" alt="" aria-hidden="true">TypeScript</span><span class="skill-chip"><img class="skill-logo" src="assets/skills/javascript.svg" alt="" aria-hidden="true">JavaScript</span><span class="skill-chip"><img class="skill-logo" src="assets/skills/tailwindcss.svg" alt="" aria-hidden="true">Tailwind CSS</span><span class="skill-chip"><i class="skill-mark mark-flow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 5v14m0-12h7a5 5 0 0 1 5 5v5m-5-8h3"/><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="17" r="2"/></svg></i>React Flow</span>
+        </div>
       </div>
       <div class="skillgroup">
-        <h3>Backend &amp; Data</h3>
-        <div class="tags"><span>Node.js</span><span>PostgreSQL</span><span>Prisma</span><span>Python</span></div>
+        <h3 class="skill-label label-coral">Backend &amp; Data</h3>
+        <div class="skill-chips">
+          <span class="skill-chip"><img class="skill-logo" src="assets/skills/nodedotjs.svg" alt="" aria-hidden="true">Node.js</span><span class="skill-chip"><img class="skill-logo" src="assets/skills/postgresql.svg" alt="" aria-hidden="true">PostgreSQL</span><span class="skill-chip"><img class="skill-logo" src="assets/skills/prisma.svg" alt="" aria-hidden="true">Prisma</span><span class="skill-chip"><img class="skill-logo" src="assets/skills/python.svg" alt="" aria-hidden="true">Python</span>
+        </div>
       </div>
       <div class="skillgroup">
-        <h3>AI</h3>
-        <div class="tags"><span>Groq</span><span>LangChain</span><span>MCP</span><span>Prompt pipelines</span></div>
+        <h3 class="skill-label label-lilac">AI / Machine Learning</h3>
+        <div class="skill-chips">
+          <span class="skill-chip"><i class="skill-mark mark-word" aria-hidden="true">groq</i>Groq</span><span class="skill-chip"><img class="skill-logo" src="assets/skills/langchain.svg" alt="" aria-hidden="true">LangChain</span><span class="skill-chip"><img class="skill-logo" src="assets/skills/modelcontextprotocol.svg" alt="" aria-hidden="true">MCP</span><span class="skill-chip"><i class="skill-mark mark-prompt" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2v5m0 10v5M2 12h5m10 0h5M4.9 4.9l3.5 3.5m7.2 7.2 3.5 3.5m0-14.2-3.5 3.5m-7.2 7.2-3.5 3.5"/><circle cx="12" cy="12" r="3"/></svg></i>Prompt pipelines</span>
+        </div>
       </div>
       <div class="skillgroup">
-        <h3>Tools &amp; Workflow</h3>
-        <div class="tags"><span>Docker</span><span>AWS</span><span>Git</span><span>GitHub</span><span>Figma</span><span>VS Code</span></div>
+        <h3 class="skill-label label-mint">Tools &amp; Workflow</h3>
+        <div class="skill-chips">
+          <span class="skill-chip"><img class="skill-logo" src="assets/skills/docker.svg" alt="" aria-hidden="true">Docker</span><span class="skill-chip"><i class="skill-mark mark-word mark-aws" aria-hidden="true">aws</i>AWS</span><span class="skill-chip"><img class="skill-logo" src="assets/skills/git.svg" alt="" aria-hidden="true">Git</span><span class="skill-chip"><img class="skill-logo" src="assets/skills/github.svg" alt="" aria-hidden="true">GitHub</span><span class="skill-chip"><img class="skill-logo" src="assets/skills/figma.svg" alt="" aria-hidden="true">Figma</span><span class="skill-chip"><img class="skill-logo" src="assets/skills/vscode.svg" alt="" aria-hidden="true">VS Code</span>
+        </div>
       </div>
-      <div class="skillgroup">
-        <h3>Practices</h3>
-        <div class="tags"><span>Interface design</span><span>Responsive design</span></div>
+      <div class="skillgroup skillgroup-practices">
+        <h3 class="skill-label label-yellow">Practices</h3>
+        <div class="skill-chips">
+          <span class="skill-chip"><i class="skill-mark mark-ui">UI</i>Interface design</span><span class="skill-chip"><i class="skill-mark mark-responsive">↔</i>Responsive design</span>
+        </div>
       </div>
     </div>
-    <p class="spec">TOKENS — 22 TOOLS · 8PT GRID · PRESS / HOVER / FOCUS STATES</p>
   </section>
 
   <!-- ══ INTERLUDE · STICKER ORBIT (scroll spins one full turn) ══ -->
   <section class="orbit-sec" id="carry" aria-label="Everyday carry stickers">
     <div class="orbit-tall" id="orbitTall">
       <div class="orbit-stage">
-        <p class="kicker orbit-kicker">02.5 · THE EVERYDAY CARRY · SCROLL TO SPIN</p>
+        <p class="kicker orbit-kicker">02.5 · THE EVERYDAY CARRY · SCROLL TO SPIN<svg class="orbit-underline draw" data-draw data-dur="0.8" data-delay="0.1" viewBox="0 0 270 12" preserveAspectRatio="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M4 8 C 74 3 187 10 265 5"/></svg></p>
         <div class="orbit-window">
         <div class="orbit-ring" id="orbitRing">
           <figure class="orbit-card"><img src="assets/laptop.png" alt="laptop sticker" draggable="false" loading="lazy" /></figure>
@@ -200,7 +195,7 @@
       </svg>
     </span>
     <p class="kicker">01 / FEATURED PROJECT · AI / DEV TOOLS</p>
-    <h2>ArchDraw</h2>
+    <h2 class="scribble-heading"><span class="scribble-title">ArchDraw<svg class="title-underline draw" data-draw data-dur="0.65" data-delay="0.12" viewBox="0 0 150 16" preserveAspectRatio="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M3 10 C 42 4 106 11 147 6"/></svg></span></h2>
     <figure class="shot">
       <span class="tape blue"></span>
       <img src="assets/archdraw-preview.png" alt="ArchDraw — prompt to architecture diagram app" loading="lazy" decoding="async" />
@@ -217,7 +212,7 @@
     <section class="piece paper reveal" data-rot="-0.6" data-name="reimbursor" style="--w:640px" tabindex="0">
       <span class="tape"></span>
       <p class="kicker">02 / PRODUCT · WORKFLOW</p>
-      <h2>Reimbursor</h2>
+      <h2 class="scribble-heading"><span class="scribble-title">Reimbursor<svg class="title-underline draw" data-draw data-dur="0.7" data-delay="0.12" viewBox="0 0 190 16" preserveAspectRatio="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M3 10 C 62 5 132 12 187 6"/></svg></span></h2>
       <figure class="shot">
         <span class="tape"></span>
         <img src="assets/reimbursor-preview.png" alt="Reimbursor — expense approval workflow app" loading="lazy" decoding="async" />
@@ -230,7 +225,7 @@
 
     <section class="piece paper dark reveal" data-rot="0.6" data-name="gitgo" style="--w:640px" tabindex="0">
       <p class="kicker light">03 / OPEN SOURCE · DISCOVERY</p>
-      <h2>GitGo</h2>
+      <h2 class="scribble-heading"><span class="scribble-title">GitGo<svg class="title-underline draw" data-draw data-dur="0.6" data-delay="0.12" viewBox="0 0 112 16" preserveAspectRatio="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M3 10 C 34 5 78 11 109 6"/></svg></span></h2>
       <figure class="shot dark-shot">
         <img src="assets/gitgo-preview.png" alt="GitGo — open-source matching app" loading="lazy" decoding="async" />
       </figure>
@@ -247,8 +242,9 @@
   <!-- ══ 04 ENGINEERING NOTEBOOK ══ -->
   <section class="piece paper dark notebook reveal" data-rot="-0.6" data-name="toolkit.stack" style="--w:640px" tabindex="0">
     <span class="tape blue"></span>
+    <span class="section-note notebook-note" data-note>side quests<svg class="section-arrow draw" data-draw data-dur="0.75" data-delay="0.18" viewBox="0 0 76 46" fill="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M3 5 C 17 28 40 35 66 30"/><path class="ahead" d="m54 21 13 9-14 8"/></svg></span>
     <p class="kicker light">04 · MORE BUILDS · SIDE QUESTS</p>
-    <h2>ec0saga + more builds.</h2>
+    <h2 class="scribble-heading"><span class="scribble-title">ec0saga + more builds.<svg class="title-underline draw" data-draw data-dur="0.76" data-delay="0.12" viewBox="0 0 360 16" preserveAspectRatio="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M3 10 C 92 5 254 12 356 6"/></svg></span></h2>
     <div class="termline"><span class="g">$</span> pnpm ship <span class="d">--with-tests --and-coffee</span></div>
     <ul class="tight">
       <li>ec0saga — habits into points + CO₂ dashboards<small>React · Vite · Zustand · <a class="linkbtn" href="https://ec0saga.hiabhee.online/" target="_blank" rel="noopener">live ↗</a> · <a class="linkbtn" href="https://github.com/hiabhee/ec0saga" target="_blank" rel="noopener">code ↗</a></small></li>
@@ -263,8 +259,9 @@
   <!-- ══ 05 PERSONAL ARCHIVE ══ -->
   <div class="cluster wide">
     <section class="piece paper kraft ticket reveal" data-rot="-0.5" data-name="journey.ticket" style="--w:380px" tabindex="0">
+      <span class="section-note chapter-note" data-note>current chapter<svg class="section-arrow draw" data-draw data-dur="0.7" data-delay="0.18" viewBox="0 0 68 42" fill="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M3 4 C 14 23 34 31 59 28"/><path class="ahead" d="m48 20 12 8-13 7"/></svg></span>
       <p class="kicker">JOURNEY · ADMIT ONE</p>
-      <h2>Where i am, what i'm building on.</h2>
+      <h2 class="scribble-heading"><span class="scribble-title">Where i am, what i'm building on.<svg class="title-underline draw" data-draw data-dur="0.72" data-delay="0.12" viewBox="0 0 310 16" preserveAspectRatio="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M3 10 C 78 5 216 12 306 6"/></svg></span></h2>
       <ul class="tight">
         <li><b>NOW —</b> Full-stack intern, Surefy<small>SEP 2026 → now · AI task management</small></li>
         <li><b>2027 —</b> B.E. IT, APSIT Thane<small>CGPA 8.5 · Top 60 @ Quasar 4.0</small></li>
@@ -275,29 +272,14 @@
 
     <section class="piece paper clippings reveal" id="writing" data-rot="0.5" data-name="writing.clips" style="--w:400px" tabindex="0">
       <span class="tape"></span>
+      <span class="section-note reading-note" data-note>notes from<br>the rabbit hole<svg class="section-arrow draw" data-draw data-dur="0.78" data-delay="0.18" viewBox="0 0 82 48" fill="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M4 4 C 18 31 42 38 71 32"/><path class="ahead" d="m59 24 13 8-14 8"/></svg></span>
       <p class="kicker">WRITING · MEDIUM</p>
-      <h2>Explaining what i learn.</h2>
+      <h2 class="scribble-heading"><span class="scribble-title">Explaining what i learn.<svg class="title-underline draw" data-draw data-dur="0.72" data-delay="0.12" viewBox="0 0 260 16" preserveAspectRatio="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M3 10 C 72 5 184 12 256 6"/></svg></span></h2>
       <ul class="clips">
         <li><a href="https://medium.com/@jamdadeabhishek039/jev-explained-in-5minutes-6229e6444a13" target="_blank" rel="noopener">Jev Explained in 5 Minutes ↗</a><small>AI / decision models</small></li>
         <li><a href="https://medium.com/@jamdadeabhishek039/wtf-is-kafka-58a5a6c07420" target="_blank" rel="noopener">WTF Is Kafka? ↗</a><small>systems / streaming</small></li>
         <li><a href="https://medium.com/@jamdadeabhishek039/mcp-vs-skills-3b14bd3f8798" target="_blank" rel="noopener">MCP vs Skills ↗</a><small>AI tooling</small></li>
       </ul>
-    </section>
-  </div>
-
-  <div class="cluster">
-    <figure class="piece photo reveal" data-rot="-0.6" data-name="hackathon.photo" style="--w:240px" tabindex="0">
-      <span class="pin"></span>
-      <div class="img whiteboard">
-        <svg viewBox="0 0 220 160" aria-label="Whiteboard sketch"><rect width="220" height="160" fill="#FFFDF8"/><rect x="14" y="14" width="192" height="132" fill="none" stroke="#171719" stroke-width="3"/><path d="M30 110 L80 50 L120 90 L160 40" stroke="#E8491D" stroke-width="3" fill="none"/><circle cx="160" cy="40" r="7" fill="none" stroke="#286CFF" stroke-width="3"/><text x="30" y="135" font-family="Caveat,cursive" font-size="20" fill="#171719">quasar 4.0 — top 60</text></svg>
-      </div>
-      <p>hackathon whiteboard, kept</p>
-    </figure>
-    <section class="piece paper resume reveal" data-rot="0.6" data-name="resume.card" style="--w:260px" tabindex="0">
-      <p class="kicker">PDF · 1 PAGE</p>
-      <h2>résumé.pdf</h2>
-      <p class="small">Education, internship, stack — no jokes.</p>
-      <div class="row-btns"><a class="pillbtn" href="https://drive.google.com/drive/folders/1L4T98MImbngdA_gMu6kRF4ElKG1uGMMN?usp=drive_link" target="_blank" rel="noopener">Get it ↗</a></div>
     </section>
   </div>
 
@@ -312,11 +294,11 @@
       <img src="assets/macbook.png" alt="" loading="lazy" />
       <figcaption>ideas → shipped</figcaption>
     </figure>
-    <span class="contact-margin-note" aria-hidden="true">say hi!<svg viewBox="0 0 92 48" fill="none"><path d="M3 3C25 26 46 38 79 35M68 25l12 10-13 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="contact-margin-note" aria-hidden="true"><span data-note>say hi!</span><svg class="draw sayhi-arrow" data-draw data-dur="0.9" data-delay="0.22" viewBox="0 0 92 48" fill="none"><path class="shaft" pathLength="1" d="M3 3 C 25 26 46 38 79 35"/><path class="ahead" d="m68 25 12 10-13 7"/></svg></span>
     <article class="piece paper contact-paper" data-name="contact.card" tabindex="0">
       <span class="contact-tape contact-tape-blue" aria-hidden="true"></span>
       <span class="contact-tape contact-tape-coral" aria-hidden="true"></span>
-      <span class="contact-reply" aria-hidden="true">~24h reply</span>
+      <span class="contact-reply" aria-hidden="true">~24h reply<svg class="reply-ring draw" data-draw data-dur="0.75" data-delay="0.6" viewBox="0 0 190 72" preserveAspectRatio="none"><path class="shaft" pathLength="1" d="M96 6 C 148 6 183 18 184 36 C 185 55 142 67 92 66 C 43 66 7 55 6 36 C 5 18 44 7 96 6 C 98 6 101 6 104 7"/></svg></span>
       <div class="contact-copy">
         <p class="kicker">CONTACT · INBOX ALWAYS OPEN</p>
         <h2>Let’s build something useful.</h2>
@@ -337,7 +319,17 @@
     </article>
   </section>
 
-  <footer class="colophon"><span>Designed & built by Abhishek Jamdade · © 2026 · <em class="serif-it">drag to rearrange — it remembers</em></span></footer>
+  <footer class="landscape-footer" aria-label="Site footer">
+    <svg class="landscape-art" viewBox="0 0 1600 132" preserveAspectRatio="none" fill="none" aria-hidden="true">
+      <circle cx="145" cy="87" r="31" fill="#b8dce0" opacity=".32"/>
+      <svg class="landscape-trace draw" data-draw data-dur="1.2" data-delay="0" x="0" y="-8" width="445" height="151" viewBox="0 0 445 151" fill="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M-18 139 C 8 125 28 117 47 104 C 61 95 73 86 88 78 C 93 78 97 82 102 87 C 110 95 119 103 132 108 C 145 99 158 81 174 66 C 191 51 203 38 220 28 C 225 32 229 38 233 44 C 244 60 258 76 275 87 C 282 91 288 94 295 96 C 309 83 322 67 336 55 C 344 49 350 46 356 50 C 369 59 381 76 395 91 C 414 108 429 117 452 125 M-6 134 C 19 126 24 113 44 104 M171 70 C 187 55 203 39 220 33 C 226 38 230 44 236 51 M292 100 C 309 88 322 70 339 57 M185 64 Q194 53 204 47 M198 57 Q207 44 216 40 M237 54 Q243 64 251 70 M246 61 Q252 71 261 78 M314 79 Q323 67 330 63" stroke="#48453f" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg class="landscape-ridge draw" data-draw data-dur="0.75" data-delay="0.55" x="15" y="48" width="390" height="104" viewBox="0 0 390 104" fill="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M-12 79 C 28 71 44 69 72 74 C 99 78 115 71 132 63 C 151 55 164 55 182 62 C 198 69 215 67 231 55 C 249 42 262 39 278 44 C 298 50 312 63 331 68 C 350 73 366 68 401 59 M177 68 Q184 59 190 53 M188 75 Q195 65 202 62 M211 67 Q217 59 225 55 M232 61 Q240 52 246 49 M251 70 Q256 62 264 59 M267 78 Q272 70 281 68 M147 71 Q154 64 161 62 M126 80 Q133 75 139 72" stroke="#777168" stroke-width=".85" stroke-linecap="round" stroke-linejoin="round" opacity=".72"/></svg>
+      <svg class="landscape-pines draw" data-draw data-dur="0.9" data-delay="1.05" x="16" y="78" width="260" height="46" viewBox="0 0 260 94" preserveAspectRatio="none" fill="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M32 90 C33 77 33 66 34 53 M34 17 C30 21 26 26 22 32 C26 32 30 30 34 28 C30 34 26 39 20 44 C25 44 30 42 34 39 C31 46 27 51 22 56 C26 57 31 55 35 52 C35 64 35 77 37 90 M34 17 C38 22 42 27 47 32 C43 33 39 30 34 28 C39 34 44 39 51 44 C46 44 40 42 35 39 C39 46 44 51 49 56 C44 57 40 55 35 52 M110 90 C110 76 111 66 112 54 M112 9 C108 14 105 19 102 25 C106 25 109 23 112 21 C107 28 103 33 99 37 C104 38 108 35 112 32 C109 39 105 44 101 49 C105 50 109 48 113 46 C114 61 114 76 116 90 M112 9 C116 15 120 20 124 26 C120 26 116 24 112 21 C118 28 123 33 128 38 C123 38 118 35 113 32 C117 39 122 45 127 49 C122 50 118 48 113 46 M188 91 C189 80 189 70 190 62 M190 28 C187 32 184 36 181 41 C184 41 187 39 190 37 C186 43 183 47 178 51 C182 52 186 50 190 48 C188 54 184 58 180 63 C184 64 188 62 191 60 C191 72 191 82 193 91 M190 28 C194 33 197 37 200 41 C197 42 194 39 190 37 C195 43 199 47 203 51 C199 52 195 50 191 48 C194 54 198 59 201 63 C197 64 194 62 191 60" stroke="#4c4944" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg class="landscape-ground draw" data-draw data-dur="1.1" data-delay="1.85" x="252" y="39" width="1348" height="91" viewBox="0 0 1348 91" fill="none" aria-hidden="true"><path class="shaft" pathLength="1" d="M0 83 C 68 80 120 84 174 82 C 235 80 283 84 339 82 C 395 80 446 83 502 82 C 555 81 600 84 651 82 C 706 80 756 83 806 82 C 864 81 909 83 967 82 C 1027 81 1071 84 1128 82 C 1183 80 1231 82 1275 80 C 1306 78 1321 65 1347 53" stroke="#5d5851" stroke-width=".95" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </svg>
+    <p class="landscape-credit">Designed &amp; built by Abhishek Jamdade · © 2026 · Mumbai, India</p>
+    <span class="landscape-ship" data-note>ship it!<svg class="ship-scribble draw" data-draw data-dur="0.65" data-delay="2.35" viewBox="0 0 110 14" aria-hidden="true"><path class="shaft" pathLength="1" d="M3 9 C 29 4 71 4 105 7"/></svg></span>
+  </footer>
 </main>
 
 <div class="sides" aria-hidden="true">
@@ -345,16 +337,11 @@
     <span class="side-v">MUMBAI 19.07&deg;N &mdash; 72.87&deg;E</span>
     <span class="side-rule"></span>
     <span class="side-chip">OPEN TO WORK &#9679;</span>
-    <span class="side-code">git push</span>
-    <span class="side-hand">sketch first!</span>
-    <span class="ring"></span>
   </div>
   <div class="side side-r">
     <span class="dotgrid"></span>
     <span class="side-v">AI SYSTEMS &rarr; INTERFACES</span>
     <span class="side-rule"></span>
-    <span class="side-code">$ pnpm ship</span>
-    <span class="side-hand">ship it!</span>
   </div>
 </div>
 <div class="stickers" id="stickers">
@@ -364,7 +351,6 @@
   <div class="piece sticker s-code reveal" data-rot="0.8" data-name="sticker.hire" style="--w:170px;top:32%;left:max(14px,2vw)" tabindex="0"><p><span class="k">const</span> hire = () =&gt; <span class="s">true</span>;</p></div>
 </div>
 <p class="hint" id="hint">little stickers are draggable · scroll for more ↓</p>
-<p class="ny-float" aria-hidden="true"><span class="cdot"></span><span id="nycount">counting…</span></p>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="guide guide-v" id="guideV"></div>
 <div class="guide guide-h" id="guideH"></div>
@@ -379,7 +365,7 @@
 </nav>
 
 <div class="figcursor" id="figcursor" aria-hidden="true"><div class="figcursor-inner"><svg viewBox="0 0 42 48"><path d="M3 2 38.1 22.8q2.7 1.6-.1 2.7l-15.3 5.7-8.3 14.1q-1.5 2.6-2.2-.3L2 4.1Q1.3 1 3 2Z"/></svg><span class="figtag">you</span></div></div>
-<script src="main.js?v=8"></script>
+<script src="main.js?v=13"></script>
 <script src="3d.js" defer></script>
 <script src="assets/vendor/html2canvas.min.js" defer></script>
 <script src="dust.js?v=4" defer></script>

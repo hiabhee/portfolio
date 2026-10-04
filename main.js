@@ -14,7 +14,7 @@ document.querySelectorAll('.piece').forEach((el) => {
 
 // ── premium word split: every paper heading + hero animates word-by-word ──
 if (!reduceMotion) {
-  document.querySelectorAll('.paper h1, .paper h2').forEach((el) => {
+  document.querySelectorAll('.paper h1, .paper h2:not(.scribble-heading)').forEach((el) => {
     const text = el.textContent.trim().replace(/\s+/g, ' ');
     el.setAttribute('aria-label', text);
     el.innerHTML = text.split(' ').map((w, i) =>
@@ -283,6 +283,260 @@ requestAnimationFrame(() => requestAnimationFrame(() => {
   document.dispatchEvent(new Event('portfolio:ready'));
 }));
 
+// First-visit hero intro: drop the portrait, resize it in a tiny editor moment, then place it.
+(() => {
+  const root = document.documentElement;
+  const skip = document.getElementById('introSkip');
+  if (!root.classList.contains('hero-intro')) return;
+  const face = document.getElementById('faceSticker');
+  const scrap = document.querySelector('.hero-scrap');
+  const napkin = document.getElementById('napkin');
+  const copy = document.querySelector('.napkin-text');
+  const originalStyle = face?.getAttribute('style');
+  let placeholder, selection, editor, dustLayer, dustAnimations = [], timer, failSafe, cursorRaf = 0, isLifted = false, finished = false;
+  const restoreFace = (visibleDuringReveal = false) => {
+    if (!face || !placeholder?.isConnected) return;
+    selection?.remove(); selection = null;
+    placeholder.replaceWith(face);
+    placeholder = null;
+    face.classList.remove('intro-flight-sticker');
+    if (originalStyle === null) face.removeAttribute('style');
+    else face.setAttribute('style', originalStyle);
+    if (visibleDuringReveal) {
+      face.style.visibility = 'visible';
+      face.style.opacity = '1';
+      face.style.pointerEvents = 'none';
+    }
+    isLifted = false;
+  };
+  const holdAnimatedTransform = (element, animation) => {
+    const transform = getComputedStyle(element).transform;
+    element.style.transform = transform;
+    animation.cancel();
+  };
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    clearTimeout(timer);
+    clearTimeout(failSafe);
+    if (cursorRaf) cancelAnimationFrame(cursorRaf);
+    cursorRaf = 0;
+    if (isLifted) {
+      face.getAnimations().forEach((animation) => animation.cancel());
+      restoreFace();
+    }
+    selection?.getAnimations().forEach((a) => a.cancel());
+    editor?.getAnimations().forEach((a) => a.cancel());
+    dustAnimations.forEach((a) => a.cancel());
+    dustLayer?.remove();
+    editor?.remove();
+    if (face && !isLifted && originalStyle !== undefined) {
+      if (originalStyle === null) face.removeAttribute('style');
+      else face.setAttribute('style', originalStyle);
+    }
+    copy?.classList.add('intro-copy-live');
+    scrap?.classList.add('intro-reveal');
+    root.classList.remove('hero-intro');
+    root.classList.add('hero-intro-done');
+    document.dispatchEvent(new Event('portfolio:intro-finished'));
+    skip?.blur();
+  };
+  const wait = (ms) => new Promise((resolve) => { timer = setTimeout(resolve, ms); });
+  const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+  const degrees = (value) => {
+    const n = Number.parseFloat(value);
+    if (!Number.isFinite(n)) return 0;
+    if (value.includes('rad')) return n * 180 / Math.PI;
+    if (value.includes('turn')) return n * 360;
+    return n;
+  };
+  const visibleAngle = (element) => {
+    let total = 0;
+    for (let node = element; node && node !== document.body; node = node.parentElement) {
+      const css = getComputedStyle(node);
+      total += degrees(css.rotate);
+      if (css.transform !== 'none') {
+        const matrix = new DOMMatrixReadOnly(css.transform);
+        total += Math.atan2(matrix.b, matrix.a) * 180 / Math.PI;
+      }
+    }
+    return total;
+  };
+  const dissolveSelection = async (x, y, width, height, angle) => {
+    if (!selection) return;
+    dustLayer = document.createElement('div');
+    dustLayer.className = 'intro-dust-layer';
+    dustLayer.setAttribute('aria-hidden', 'true');
+    const count = 32;
+    const left = -width / 2 - 7, right = width / 2 + 7;
+    const top = -height / 2 - 7, bottom = height / 2 + 7;
+    const radians = angle * Math.PI / 180;
+    for (let i = 0; i < count; i++) {
+      const side = i % 4, t = (Math.floor(i / 4) + .5) / 8;
+      let px, py, nx, ny;
+      if (side === 0) { px = left + (right - left) * t; py = top; nx = 0; ny = -1; }
+      else if (side === 1) { px = right; py = top + (bottom - top) * t; nx = 1; ny = 0; }
+      else if (side === 2) { px = right - (right - left) * t; py = bottom; nx = 0; ny = 1; }
+      else { px = left; py = bottom - (bottom - top) * t; nx = -1; ny = 0; }
+      const spin = Math.sin(i * 91.7 + 4.2) * .45;
+      const random = (value) => { const n = Math.sin(value * 127.1 + 311.7) * 43758.5453; return n - Math.floor(n); };
+      const size = 2 + random(i + 2) * 2.6;
+      const distance = 12 + random(i + 15) * 34;
+      const ox = Math.cos(radians) * nx - Math.sin(radians) * ny;
+      const oy = Math.sin(radians) * nx + Math.cos(radians) * ny;
+      const jitter = (random(i + 29) - .5) * 12;
+      const dot = document.createElement('i');
+      dot.className = 'intro-dust';
+      dot.style.cssText = `left:${x + Math.cos(radians) * px - Math.sin(radians) * py - size / 2}px;top:${y + Math.sin(radians) * px + Math.cos(radians) * py - size / 2}px;width:${size}px;height:${size}px;--dust-color:${i % 3 === 0 ? '#a9c8ff' : i % 3 === 1 ? '#3978ff' : '#d8e5ff'}`;
+      dustLayer.append(dot);
+      const dx = ox * distance + Math.cos(spin) * jitter;
+      const dy = oy * distance + Math.sin(spin) * jitter;
+      dustAnimations.push(dot.animate([
+        {transform:'translate3d(0,0,0) scale(1)',opacity:.95},
+        {transform:`translate3d(${dx * .45}px,${dy * .45}px,0) scale(.8)`,opacity:.7,offset:.35},
+        {transform:`translate3d(${dx}px,${dy}px,0) scale(.16)`,opacity:0}
+      ],{duration:480 + random(i + 42) * 170,delay:(i % 8) * 12,easing:'cubic-bezier(.16,.62,.28,1)',fill:'forwards'}));
+    }
+    document.body.append(dustLayer);
+    const lineFade = selection.animate([
+      {opacity:1,filter:'blur(0px)'},
+      {opacity:.7,filter:'blur(1px)',offset:.4},
+      {opacity:0,filter:'blur(4px)'}
+    ],{duration:520,easing:'ease-out',fill:'forwards'});
+    await Promise.allSettled([...dustAnimations.map((a) => a.finished), lineFade.finished]);
+    dustLayer.remove(); dustLayer = null; dustAnimations = [];
+  };
+  const run = async () => {
+    if (!face || !scrap || !napkin || finished) return finish();
+    // Let the hero's entrance, fonts, and portrait decode settle before reading the slot.
+    await Promise.allSettled([
+      document.fonts?.ready,
+      ...[napkin, face].flatMap((el) => el.getAnimations().map((animation) => animation.finished))
+    ]);
+    await document.getElementById('faceTilt')?.decode().catch(() => {});
+    let last, stable = 0;
+    for (let frame = 0; frame < 24 && stable < 3; frame++) {
+      await nextFrame();
+      const rect = face.getBoundingClientRect();
+      const current = [rect.left, rect.top, rect.width, rect.height];
+      stable = last && current.every((value, i) => Math.abs(value - last[i]) < .25) ? stable + 1 : 0;
+      last = current;
+    }
+    if (finished) return;
+    const box = face.getBoundingClientRect();
+    const w = face.offsetWidth || box.width, h = face.offsetHeight || box.height;
+    if (!w || !h) return finish();
+    const targetX = box.left + box.width / 2, targetY = box.top + box.height / 2;
+    const cx = innerWidth / 2, cy = innerHeight / 2;
+    const dx = cx - targetX, dy = cy - targetY;
+    const worldAngle = visibleAngle(face);
+    placeholder = document.createElement('div');
+    placeholder.className = 'intro-face-placeholder';
+    placeholder.setAttribute('aria-hidden', 'true');
+    placeholder.style.width = `${w}px`;
+    placeholder.style.height = `${h}px`;
+    face.before(placeholder);
+    face.remove();
+    face.classList.add('intro-flight-sticker');
+    Object.assign(face.style, {
+      position:'fixed', left:`${targetX - w / 2}px`, top:`${targetY - h / 2}px`,
+      right:'auto', bottom:'auto', width:`${w}px`, height:`${h}px`, margin:'0',
+      translate:'0 0', scale:'1', rotate:'none', transformOrigin:'center',
+      opacity:'1', visibility:'visible', pointerEvents:'none', zIndex:'120', willChange:'transform'
+    });
+    document.body.append(face);
+    isLifted = true;
+    selection = document.createElement('div');
+    selection.className = 'intro-selection';
+    selection.setAttribute('aria-hidden', 'true');
+    selection.innerHTML = '<i></i><i></i><i></i><i></i>';
+    face.append(selection);
+    editor = document.createElement('div');
+    editor.className = 'intro-editor-cursor';
+    editor.setAttribute('aria-hidden', 'true');
+    editor.innerHTML = '<svg viewBox="0 0 24 32" aria-hidden="true"><path d="M2 2.5 21 16.2l-8.2 1.1-4.1 9.1L2 2.5Z" fill="#286bff" stroke="white" stroke-width="2.6" stroke-linejoin="round"/><path d="m8.7 17.8 4.1 1.5" stroke="#173d91" stroke-width="1.3"/></svg><span>you</span>';
+    document.body.append(editor);
+    const fall = -Math.max(innerHeight * 1.15, h * 2.6);
+    const dropFrom = `translate3d(${dx}px,${dy + fall}px,0) scale(2) rotate(${worldAngle - 1.5}deg)`;
+    const landed = `translate3d(${dx}px,${dy}px,0) scale(2) rotate(${worldAngle}deg)`;
+    const placed = `translate3d(0,0,0) scale(1) rotate(${worldAngle}deg)`;
+    const totalDuration = 2500;
+    const cursorStart = {x:innerWidth + 24,y:innerHeight + 24};
+    const motion = face.animate([
+      {transform:dropFrom,opacity:0,offset:0,easing:'cubic-bezier(.2,.78,.25,1)'},
+      {transform:`translate3d(${dx}px,${dy + 18}px,0) scale(2.035) rotate(${worldAngle + .7}deg)`,opacity:1,offset:.27,easing:'cubic-bezier(.35,0,.65,1)'},
+      {transform:`translate3d(${dx}px,${dy - 5}px,0) scale(1.985) rotate(${worldAngle - .4}deg)`,opacity:1,offset:.31,easing:'cubic-bezier(.22,.68,.22,1)'},
+      {transform:landed,opacity:1,offset:.36},
+      {transform:landed,opacity:1,offset:.52,easing:'cubic-bezier(.22,.68,.22,1)'},
+      {transform:placed,opacity:1,offset:1}
+    ], {duration:totalDuration,easing:'linear',fill:'forwards'});
+    // Read the rendered resize handle each frame. This follows the browser's
+    // actual transform composition, so the cursor cannot drift from the corner.
+    const followHandle = () => {
+      const phase = Math.min(1, Number(motion.currentTime || 0) / totalDuration);
+      const handle = selection?.querySelector('i:nth-child(4)');
+      if (!handle) return;
+      const rect = handle.getBoundingClientRect();
+      const targetX = rect.left + rect.width / 2;
+      const targetY = rect.top + rect.height / 2;
+      editor.classList.toggle('intro-cursor-flip-y', targetY > innerHeight - 56);
+      const tipX = 22 * 2 / 24;
+      const tipY = 29 * 2.5 / 32;
+      const approach = Math.max(0, Math.min(1, (phase - .3) / .12));
+      const eased = 1 - (1 - approach) ** 3;
+      const x = cursorStart.x + (targetX - cursorStart.x) * eased;
+      const y = cursorStart.y + (targetY - cursorStart.y) * eased;
+      editor.style.transform = `translate3d(${x - tipX}px,${y - tipY}px,0)`;
+      editor.style.opacity = `${approach}`;
+      cursorRaf = requestAnimationFrame(followHandle);
+    };
+    followHandle();
+    selection.animate([
+      {opacity:0,offset:0},
+      {opacity:0,offset:.34},
+      {opacity:1,offset:.42}
+    ],{duration:totalDuration,easing:'linear',fill:'forwards'});
+    await wait(totalDuration * .43);
+    if (finished) return;
+    editor.classList.add('is-grabbing');
+    selection.classList.add('is-adjusting');
+    await motion.finished.catch(() => {});
+    if (finished) return;
+    if (cursorRaf) cancelAnimationFrame(cursorRaf);
+    cursorRaf = 0;
+    const finalHandle = selection.querySelector('i:nth-child(4)').getBoundingClientRect();
+    editor.style.transform = `translate3d(${finalHandle.left + finalHandle.width / 2 - 22 * 2 / 24}px,${finalHandle.top + finalHandle.height / 2 - 29 * 2.5 / 32}px,0)`;
+    editor.style.opacity = '1';
+    editor.classList.remove('is-grabbing');
+    editor.classList.add('is-releasing');
+    holdAnimatedTransform(face, motion);
+    editor.animate([{opacity:1},{opacity:0}],{duration:220,delay:80,easing:'ease-out',fill:'forwards'});
+    await dissolveSelection(targetX, targetY, w, h, worldAngle);
+    if (finished) return;
+    selection.remove(); selection = null;
+    restoreFace(true);
+    // The single portrait is back in its paper slot. The paper and copy now emerge around it.
+    scrap.classList.add('intro-reveal');
+    await wait(240);
+    if (finished) return;
+    copy?.classList.add('intro-copy-live');
+    await wait(240);
+    if (finished) return;
+    const bar = document.querySelector('.strip');
+    const rail = document.querySelector('.rail');
+    [bar, rail].filter(Boolean).forEach((el, i) => el.animate([
+      {opacity:0,scale:.9,translate:i ? '14px 0px' : '0px -12px'},
+      {opacity:1,scale:1.035,translate:i ? '-2px 0px' : '0px 2px',offset:.78},
+      {opacity:1,scale:1,translate:'0px 0px'}
+    ],{duration:520,delay:i*90,easing:'cubic-bezier(.2,.8,.2,1)',fill:'both'}));
+    await wait(1750);
+    finish();
+  };
+  skip?.addEventListener('click', finish, { once: true });
+  document.addEventListener('portfolio:ready', run, {once:true});
+  failSafe = setTimeout(finish, 12000);
+})();
+
 // ── face sticker gestures: leans toward your cursor, squashes on poke, wiggles on click ──
 (() => {
   const wrap = document.getElementById('faceSticker');
@@ -324,9 +578,32 @@ requestAnimationFrame(() => requestAnimationFrame(() => {
   if (!matchMedia('(pointer: fine)').matches) return;
   const cur = document.getElementById('figcursor');
   if (!cur) return;
-  document.body.classList.add('cursor-you');
+  const introPending = document.documentElement.classList.contains('hero-intro');
+  let enabled = false, pointerSeen = false, pointerInside = true;
   const instant = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let x = innerWidth / 2, y = innerHeight / 2, tx = x, ty = y, raf = 0;
+  const enable = () => {
+    if (enabled) return;
+    enabled = true;
+    x = tx; y = ty;
+    document.body.classList.add('cursor-you');
+    cur.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
+    if (pointerInside && pointerSeen) cur.classList.add('on');
+  };
+  const waitForHero = async () => {
+    await Promise.allSettled([
+      document.fonts?.ready,
+      document.getElementById('faceTilt')?.decode().catch(() => {})
+    ]);
+    const hero = document.querySelector('.hero');
+    const entrance = hero?.getAnimations({subtree:true}).filter((animation) =>
+      animation.playState !== 'finished' && animation.effect?.getTiming().iterations !== Infinity
+    ) || [];
+    await Promise.allSettled(entrance.map((animation) => animation.finished));
+    requestAnimationFrame(() => requestAnimationFrame(enable));
+  };
+  if (introPending) document.addEventListener('portfolio:intro-finished', enable, {once:true});
+  else document.addEventListener('portfolio:ready', waitForHero, {once:true});
   const loop = () => {
     x += (tx - x) * (instant ? 1 : 0.68);
     y += (ty - y) * (instant ? 1 : 0.68);
@@ -337,12 +614,12 @@ requestAnimationFrame(() => requestAnimationFrame(() => {
   const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
   addEventListener('pointermove', (e) => {
     tx = e.clientX; ty = e.clientY;
-    cur.classList.add('on');
-    kick();
+    pointerSeen = true;
+    if (enabled) { cur.classList.add('on'); kick(); }
   }, { passive: true });
-  document.addEventListener('mouseleave', () => cur.classList.remove('on'));
-  document.addEventListener('mouseenter', () => cur.classList.add('on'));
-  addEventListener('pointerdown', () => cur.classList.add('press'));
+  document.addEventListener('mouseleave', () => { pointerInside = false; cur.classList.remove('on'); });
+  document.addEventListener('mouseenter', () => { pointerInside = true; if (enabled && pointerSeen) cur.classList.add('on'); });
+  addEventListener('pointerdown', () => { if (enabled) cur.classList.add('press'); });
   addEventListener('pointerup', () => cur.classList.remove('press'));
 })();
 
@@ -386,7 +663,21 @@ requestAnimationFrame(() => requestAnimationFrame(() => {
   targets.filter((el) => el.dataset.triggerOnView === 'false').forEach(enter);
   const observed = targets.filter((el) => el.dataset.triggerOnView !== 'false');
   if (!('IntersectionObserver' in window)) {
-    observed.forEach((el) => reveal(el, true));
+    let frame = 0;
+    const revealVisible = () => {
+      frame = 0;
+      observed.forEach((el) => {
+        if (el.classList.contains('drawn') || el.classList.contains('note-in')) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < innerHeight * .9 && rect.bottom > innerHeight * .1) enter(el);
+      });
+    };
+    const scheduleReveal = () => {
+      if (!frame) frame = requestAnimationFrame(revealVisible);
+    };
+    scheduleReveal();
+    addEventListener('scroll', scheduleReveal, { passive: true });
+    addEventListener('resize', scheduleReveal, { passive: true });
     return;
   }
   const io = new IntersectionObserver((es) => es.forEach((e) => {
@@ -396,6 +687,31 @@ requestAnimationFrame(() => requestAnimationFrame(() => {
 })();
 if (reduceMotion) document.body.classList.add('is-ready');
 
+// Clear the fixed corner hints while the landscape signature is on screen.
+(() => {
+  const footer = document.querySelector('.landscape-footer');
+  if (!footer) return;
+  const toggleFooterChrome = () => {
+    const rect = footer.getBoundingClientRect();
+    document.body.classList.toggle('footer-in-view', rect.top < innerHeight && rect.bottom > 0);
+  };
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(([entry]) => {
+      document.body.classList.toggle('footer-in-view', entry.isIntersecting);
+    }, { threshold: 0.01 });
+    io.observe(footer);
+  } else {
+    let frame = 0;
+    const update = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => { frame = 0; toggleFooterChrome(); });
+    };
+    toggleFooterChrome();
+    addEventListener('scroll', update, { passive: true });
+    addEventListener('resize', update, { passive: true });
+  }
+})();
+
 // ── mumbai clock in the header ──
 (() => {
   const el = document.getElementById('clock');
@@ -404,48 +720,6 @@ if (reduceMotion) document.body.classList.add('is-ready');
   const tick = () => { el.textContent = `◐ MUM ${fmt.format(new Date())}`; };
   tick();
   setInterval(tick, 20000);
-})();
-
-// ── new-year countdown: days left, re-checked every day + counted up ──
-(() => {
-  const el = document.getElementById('nycount');
-  if (!el) return;
-  const DAY = 86400000;
-  const daysLeft = () => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const target = new Date(today.getFullYear() + 1, 0, 1);
-    return { days: Math.max(0, Math.round((target - today) / DAY)), year: target.getFullYear() };
-  };
-  const label = (days, year) =>
-    days === 0 ? 'happy new year!' : `${days} day${days === 1 ? '' : 's'} → ${year}`;
-  let current = 0;
-  let shownYear = daysLeft().year;
-  const paint = (days, year) => { el.textContent = label(days, year); };
-  const countTo = (to, year) => {
-    if (reduceMotion) { current = to; shownYear = year; paint(current, shownYear); return; }
-    const from = current;
-    if (from === to) { paint(to, year); return; }
-    const t0 = performance.now(), dur = Math.min(1400, 400 + Math.abs(to - from) * 12);
-    const step = (t) => {
-      const p = Math.min(1, (t - t0) / dur);
-      const ez = 1 - Math.pow(1 - p, 3);
-      paint(Math.round(from + (to - from) * ez), year);
-      if (p < 1) requestAnimationFrame(step);
-      else { current = to; shownYear = year; }
-    };
-    requestAnimationFrame(step);
-  };
-  // initial count-up on load
-  const first = daysLeft();
-  countTo(first.days, first.year);
-  // re-check often (covers midnight rollover + sleeping tabs) — updates only when the day changes
-  const refresh = () => {
-    const { days, year } = daysLeft();
-    if (days !== current || year !== shownYear) countTo(days, year);
-  };
-  setInterval(refresh, 60000);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
 })();
 
 // ── github activity: render a bundled snapshot first, then refresh live ──
